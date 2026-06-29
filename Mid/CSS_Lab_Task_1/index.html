@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+
+
+
+
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Service Request Portal</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+
+
+
+
+<body>
+
+    <header>
+        <div class="header-content">
+            <h1>Student Service Portal</h1>
+            <p>Your digital desk for university requests and inquiries.</p>
+        </div>
+    </header>
+
+    <nav>
+        <a href="#home">Home</a>
+        <a href="#services">Services</a>
+        <a href="#contact">Contact</a>
+    </nav>
+
+
+
+
+
+    <main>
+        <section class="description">
+            <h2>Available Services</h2>
+            <p> Make request for an official transcript, issue a replacement ID card or submit a general inquiry. Processing times may vary.</p>
+        </section>
+
+        <section class="form-section">
+            <form action="#" method="POST">
+                
+                <label for="studentName">Student Name</label>
+                <input type="text" id="studentName" name="studentName" required>
+
+                <label for="studentID">Student ID</label>
+                <input type="text" id="studentID" name="studentID" required maxlength="10">
+
+                <label for="email">University Email</label>
+                <input type="email" id="email" name="email" required>
+
+                <label for="serviceType">Service Type</label>
+                <select id="serviceType" name="serviceType">
+                    <option value="transcript">Transcript Request</option>
+                    <option value="id_card">ID Card Issue</option>
+                    <option value="inquiry">General Inquiry</option>
+                </select>
+
+                <label>Urgency Level</label>
+                <div class="radio-group">
+                    <label class="radio-label">
+                        <input type="radio" name="urgency" value="low" checked> Standard Processing
+                    </label>
+                    <label class="radio-label">
+                        <input type="radio" name="urgency" value="high"> Urgent (Requires Approval)
+                    </label>
+                </div>
+
+                <label for="details">Additional Details</label>
+                <textarea id="details" name="details" rows="5"></textarea>
+
+                <button type="submit">Submit Request</button>
+            </form>
+        </section>
+    </main>
+
+
+    
+
+    <footer>
+        <p>&copy; 2026 The University Student Affairs. All rights reserved.</p>
+    </footer>
+
+
+
+
+
+
+
+</body>
+</html>
