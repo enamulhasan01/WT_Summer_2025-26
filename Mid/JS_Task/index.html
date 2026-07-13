@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+
+    <title>Portfolio Website</title>
+    
+    <style>
+
+
+        body {
+            font-family: Arial, sans-serif;
+            padding: 26px;
+            background-color: linen; 
+            color: black;
+        }
+
+
+
+        
+        section {
+            border: 2px solid steelblue; 
+            padding: 27px;
+            margin-bottom: 25px;
+            border-radius: 13px; 
+        }
+
+
+
+        .error-msg {
+            color: red;
+            font-size: 15px;
+        }
+
+
+
+
+        #successMessage {
+            color: green;
+            font-size: 20px;
+            font-weight: bold;
+            margin-top: 26px;
+        }
+        
+
+
+
+        #switchBtn {
+            padding: 15px 27px;
+            margin-bottom: 26px;
+            background-color: darkslateblue; 
+            color: white;
+            border: none;
+            border-radius: 9px;
+            cursor: pointer;
+        }
+
+
+
+
+        button[type="submit"] {
+            background-color: forestgreen; 
+            color: white;
+            padding: 14px 28px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+        }
+
+
+
+    </style>
+</head>
+
+<body>
+
+    <h1 id="greetingMessage"></h1>
+
+    <button id="switchBtn" onclick="ToggleMode()">Switch to Dark Mode</button>
+
+    <section>
+        <h2>Hello There</h2>
+        <p>Welcome to my portfolio website.</p>
+    </section>
+
+
+
+
+    <section>
+        <h2>Registration Form</h2>
+        
+        <form onsubmit="handleFormSubmit(event)">
+            
+            <label>Name:</label><br>
+            
+
+
+            <input type="text" id="name" oninput="validateName()"><br>
+            <span id="nameError" class="error-msg"></span><br><br>
+
+
+
+            <label>Email:</label><br>
+            <input type="text" id="email" oninput="validateEmail()"><br>
+            <span id="emailError" class="error-msg"></span><br><br>
+
+            <label>Phone Number:</label><br>
+            <input type="text" id="phone" oninput="validatePhone()"><br>
+            <span id="phoneError" class="error-msg"></span><br><br>
+
+
+
+            <label>Password:</label><br>
+            <input type="password" id="password" oninput="validatePassword()"><br>
+            <span id="passwordError" class="error-msg"></span><br><br>
+
+
+            <label>Age:</label><br>
+            <input type="text" id="age" oninput="validateAge()"><br>
+            <span id="ageError" class="error-msg"></span><br><br>
+
+
+
+            <label>Message:</label><br>
+            <textarea id="message" rows="4" cols="30" oninput="validateMessage()"></textarea><br>
+            <span id="messageError" class="error-msg"></span><br><br>
+
+
+
+            <button type="submit">Submit</button>
+        </form>
+
+
+
+        <div id="successMessage"></div>
+    </section>
+
+
+
+    <script>
+        
+        function updateClock() {
+            var currentTime = new Date();
+            var hour = currentTime.getHours(); 
+            var timeString = currentTime.toLocaleTimeString(); 
+            
+
+
+
+            var greetingText = "";
+            
+            if (hour < 12) {
+                greetingText = "Good Morning";
+            } else if (hour < 18) {
+                greetingText = "Good Afternoon";
+            } else {
+                greetingText = "Good Evening";
+            }
+
+
+
+
+            document.getElementById("greetingMessage").innerHTML = greetingText + "! Current Time: " + timeString;
+        }
+
+
+        
+        setInterval(updateClock, 1000);
+        updateClock(); 
+
+        
+
+
+        function ToggleMode() {
+            var body = document.body;
+            var button = document.getElementById("switchBtn");
+
+            if (body.style.backgroundColor === "black") {
+                body.style.backgroundColor = "linen"; 
+                body.style.color = "black";
+                button.innerHTML = "Switch to Dark Mode";
+            } else {
+                body.style.backgroundColor = "black";
+                body.style.color = "white";
+                button.innerHTML = "Switch to Light Mode";
+            }
+        }
+
+
+
+        
+
+        function validateName() {
+            var name = document.getElementById("name").value;
+            var isValidName = true;
+            
+            for (var i = 0; i < name.length; i++) {
+                var char = name[i];
+                if (!((char >= 'a' && char <= 'z') || (char >= 'A' && char <= 'Z') || char === ' ')) {
+                    isValidName = false;
+                }
+            }
+
+
+
+            if (name === "" || name.length < 3 || isValidName === false) {
+                document.getElementById("nameError").innerHTML = "Name must be at least 3 characters and contain only letters and spaces.";
+                return false;
+            } else {
+                document.getElementById("nameError").innerHTML = ""; 
+                return true;
+            }
+
+
+        }
+
+        function validateEmail() {
+            var email = document.getElementById("email").value;
+            if (email === "" || email.indexOf("@") === -1 || email.indexOf(".") === -1) {
+                document.getElementById("emailError").innerHTML = "Please enter a valid email address.";
+                return false;
+            } else {
+                document.getElementById("emailError").innerHTML = "";
+                return true;
+            }
+        }
+
+
+
+
+        function validatePhone() {
+            var phone = document.getElementById("phone").value;
+            if (phone === "" || phone.length !== 10 || isNaN(phone)) {
+                document.getElementById("phoneError").innerHTML = "Phone number must be exactly 10 digits.";
+                return false;
+            } else {
+                document.getElementById("phoneError").innerHTML = "";
+                return true;
+            }
+        }
+
+
+
+
+        function validatePassword() {
+            var password = document.getElementById("password").value;
+            var hasUpper = false;
+            var hasLower = false;
+            var hasNum = false;
+            var hasSpecial = false;
+            var specialCharacters = "!@#$%^&*()_+~`|}{[]:;?><,./-=";
+
+            for (var p = 0; p < password.length; p++) {
+                var letter = password[p];
+                if (letter >= 'A' && letter <= 'Z') {
+                    hasUpper = true;
+                } else if (letter >= 'a' && letter <= 'z') {
+                    hasLower = true;
+                } else if (letter >= '0' && letter <= '9') {
+                    hasNum = true;
+                } else if (specialCharacters.indexOf(letter) !== -1) {
+                    hasSpecial = true;
+                }
+            }
+
+
+
+
+            if (password === "" || password.length < 8 || hasUpper === false || hasLower === false || hasNum === false || hasSpecial === false) {
+                document.getElementById("passwordError").innerHTML = "Password must be at least 8 characters with 1 uppercase, 1 lowercase, 1 number, and 1 special character.";
+                return false;
+            } else {
+                document.getElementById("passwordError").innerHTML = "";
+                return true;
+            }
+        }
+
+
+
+        function validateAge() {
+            var age = document.getElementById("age").value;
+            if (age === "" || isNaN(age) || parseInt(age) < 18) {
+                document.getElementById("ageError").innerHTML = "You must be 18 years or older.";
+                return false;
+            } else {
+                document.getElementById("ageError").innerHTML = "";
+                return true;
+            }
+        }
+
+
+
+
+        function validateMessage() {
+            var message = document.getElementById("message").value;
+            if (message === "" || message.length < 10) {
+                document.getElementById("messageError").innerHTML = "Message must be at least 10 characters long.";
+                return false;
+            } else {
+                document.getElementById("messageError").innerHTML = "";
+                return true;
+            }
+        }
+
+
+
+        
+        function handleFormSubmit(event) {
+            event.preventDefault(); 
+            document.getElementById("successMessage").innerHTML = "";
+
+            
+            var isNameValid = validateName();
+            var isEmailValid = validateEmail();
+            var isPhoneValid = validatePhone();
+            var isPasswordValid = validatePassword();
+            var isAgeValid = validateAge();
+            var isMessageValid = validateMessage();
+
+            
+            if (isNameValid && isEmailValid && isPhoneValid && isPasswordValid && isAgeValid && isMessageValid) {
+                
+
+
+                var name = document.getElementById("name").value;
+                var email = document.getElementById("email").value;
+                var phone = document.getElementById("phone").value;
+                var age = document.getElementById("age").value;
+                var message = document.getElementById("message").value;
+                
+                var successText = 
+                    "Registration Successful!<br>" +
+                    "Name: " + name + "<br>" +
+                    "Email: " + email + "<br>" +
+                    "Phone: " + phone + "<br>" +
+                    "Age: " + age + "<br>" +
+                    "Message: " + message + "<br>" +
+                    "Thank you for registering successfully.";
+                
+
+
+
+                document.getElementById("successMessage").innerHTML = successText;
+            }
+        }
+
+
+
+    </script>
+</body>
+</html>
