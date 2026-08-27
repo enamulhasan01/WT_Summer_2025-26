@@ -72,7 +72,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         vertical-align: top;
         margin-left: -4px; 
     }
-    img {
+    img, video {
         width: 100%;
         height: 100vh; 
         object-fit: cover;
@@ -100,5 +100,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <div class="split-right">
         <img src="assets/sign_in_jeep.png" alt="Jeep on road">
     </div>
+    
 </body>
+
 </html>
