@@ -6,7 +6,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $email = $_POST["email"];
     $password = $_POST["password"];
 
-    
     $stmt = $conn->prepare("SELECT id, role FROM users WHERE email=? AND password=?");
     $stmt->bind_param("ss", $email, $password);
     $stmt->execute();
@@ -15,16 +14,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if ($result->num_rows > 0) {
         $row = $result->fetch_assoc();
         
-        
         $_SESSION["email"] = $email;
         $_SESSION["role"] = $row["role"];
 
-        
         $folderName = $row["role"]; 
 
         echo "<script>
             alert('Login successful!');
-            window.location.href = '" . $folderName . "/';
+            window.location.href = '" . $folderName . "/dashboard.php';
         </script>";
         exit();
     } else {
@@ -57,7 +54,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         width: 50%;
         display: inline-block;
         vertical-align: top;
-        
         margin-left: -4px; 
     }
     img {
@@ -71,19 +67,21 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <div class="split-left">
         <h1>WELCOME BACK</h1>
         <p>Welcome back! Please enter your details.</p>
-        <form action="">
+        <form action="" method="post">
             <label>Email</label><br>
-            <input type="text" placeholder="Enter your email"><br><br>
+            <input type="text" name="email" placeholder="Enter your email" required><br><br>
             
             <label>Password</label><br>
-            <input type="password" placeholder="*********"><br><br>
+            <input type="password" name="password" placeholder="*********" required><br><br>
             
-            <button type="button">Sign in</button>
+            <button type="submit">Sign in</button>
+            
+            <!-- Forgot Password Link Added Here -->
+            <p><a href="forgot_password.php">Forgot password?</a></p>
         </form>
         <p>Don't have an account? <a href="signup.php">Sign up for free!</a></p>
     </div>
     <div class="split-right">
-        
         <img src="assets/sign_in_jeep.png" alt="Jeep on road">
     </div>
 </body>
