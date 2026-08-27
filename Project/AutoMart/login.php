@@ -37,7 +37,7 @@
     </div>
     <div class="split-right">
         
-        <img src="assets/jeep.jpg" alt="Jeep on road">
+        <img src="assets/sign_in_jeep.png" alt="Jeep on road">
     </div>
 </body>
 </html>
