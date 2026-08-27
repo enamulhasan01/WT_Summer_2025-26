@@ -1,6 +1,18 @@
 <?php
 session_start();
+
+
+if(isset($_SESSION["email"]) && isset($_SESSION["role"]))
+{
+    $folderName = $_SESSION["role"]; 
+    $fileName = strtolower($_SESSION["role"]) . "_dashboard.php"; 
+    header("Location: " . $folderName . "/" . $fileName);
+    exit();
+}
+
 include 'db.php';
+
+
 
 
 $VALID_APPROVAL_CODE = "AUTOMART2026"; 
