@@ -1,6 +1,18 @@
 <?php
 session_start();
+
+
+if(isset($_SESSION["email"]) && isset($_SESSION["role"]))
+{
+    $folderName = $_SESSION["role"]; 
+    $fileName = strtolower($_SESSION["role"]) . "_dashboard.php"; 
+    header("Location: " . $folderName . "/" . $fileName);
+    exit();
+}
+
 include 'db.php';
+
+
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $email = $_POST["email"];
@@ -17,11 +29,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $_SESSION["email"] = $email;
         $_SESSION["role"] = $row["role"];
 
+        
         $folderName = $row["role"]; 
+        
+        
+        $fileName = strtolower($row["role"]) . "_dashboard.php"; 
 
         echo "<script>
             alert('Login successful!');
-            window.location.href = '" . $folderName . "/dashboard.php';
+            window.location.href = '" . $folderName . "/" . $fileName . "';
         </script>";
         exit();
     } else {
@@ -76,7 +92,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             
             <button type="submit">Sign in</button>
             
-            <!-- Forgot Password Link Added Here -->
+            
             <p><a href="forgot_password.php">Forgot password?</a></p>
         </form>
         <p>Don't have an account? <a href="signup.php">Sign up for free!</a></p>
