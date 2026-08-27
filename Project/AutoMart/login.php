@@ -3,22 +3,32 @@
 <head>
     <title>Login - AutoMart</title>
     <style>
-        .split-left {
-            width: 48%;
-            display: inline-block;
-            vertical-align: top;
-            padding: 50px;
-        }
-        .split-right {
-            width: 48%;
-            display: inline-block;
-            vertical-align: top;
-        }
-        img {
-            width: 100%;
-            height: auto;
-        }
-    </style>
+    * {
+        box-sizing: border-box;
+    }
+    body {
+        margin: 0;
+        padding: 0;
+    }
+    .split-left {
+        width: 50%;
+        display: inline-block;
+        vertical-align: top;
+        padding: 80px;
+    }
+    .split-right {
+        width: 50%;
+        display: inline-block;
+        vertical-align: top;
+        
+        margin-left: -4px; 
+    }
+    img {
+        width: 100%;
+        height: 100vh; 
+        object-fit: cover;
+    }
+</style>
 </head>
 <body>
     <div class="split-left">
