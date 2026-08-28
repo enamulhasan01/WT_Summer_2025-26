@@ -109,7 +109,7 @@ $email = $_SESSION["email"];
                     $badgeBg = '#d9534f'; 
                     $btnBg = '#ffcdd2'; 
                     $btnColor = '#c62828';
-                    $btnText = "View Details";
+                   $btnText = "Order Cancelled";
                     $actionLink = "#";
                 }
                 
