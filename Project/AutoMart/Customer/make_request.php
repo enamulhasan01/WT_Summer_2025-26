@@ -17,9 +17,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $color = $_POST["car_color"]; 
     $notes = $_POST["additional_notes"];
 
-    
     $stmt = $conn->prepare("INSERT INTO CAR_REQUEST (Customer_Email, Car_Make, Car_Model, Year_Range, Max_Budget, Color, Additional_Notes) VALUES (?, ?, ?, ?, ?, ?, ?)");
-    
     
     $stmt->bind_param("ssssiss", $email, $make, $model, $year_range, $budget, $color, $notes);
     
@@ -33,6 +31,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
     $stmt->close();
 }
+
+
+$prefill_make = isset($_GET['make']) ? htmlspecialchars($_GET['make']) : '';
+$prefill_model = isset($_GET['model']) ? htmlspecialchars($_GET['model']) : '';
+$prefill_year = isset($_GET['year']) ? htmlspecialchars($_GET['year']) : '';
+$prefill_price = isset($_GET['price']) ? htmlspecialchars($_GET['price']) : '';
+$prefill_color = isset($_GET['color']) ? htmlspecialchars($_GET['color']) : '';
 ?>
 <!DOCTYPE html>
 <html>
@@ -130,7 +135,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             
             <div class="form-group">
                 <label>Car Make</label>
-                <input type="text" name="car_make" list="car_brands" placeholder="e.g. BMW, Toyota, Honda..." required>
+                <input type="text" name="car_make" list="car_brands" placeholder="e.g. BMW, Toyota, Honda..." value="<?php echo $prefill_make; ?>" required>
                 <datalist id="car_brands">
                     <option value="Audi">
                     <option value="BMW">
@@ -144,28 +149,27 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             
             <div class="form-group">
                 <label>Car Model</label>
-                <input type="text" name="car_model" placeholder="e.g. M4 Competition, Civic..." required>
+                <input type="text" name="car_model" placeholder="e.g. M4 Competition, Civic..." value="<?php echo $prefill_model; ?>" required>
             </div>
             
             <div class="form-group">
                 <label>Preferred Year Range</label>
-                <input type="text" name="year_range" placeholder="e.g. 2024-2026" required>
+                <input type="text" name="year_range" placeholder="e.g. 2024-2026" value="<?php echo $prefill_year; ?>" required>
             </div>
             
             <div class="form-group">
                 <label>Max Budget</label>
-                <input type="number" name="max_budget" placeholder="e.g. 90000" required>
+                <input type="number" name="max_budget" placeholder="e.g. 90000" value="<?php echo $prefill_price; ?>" required>
             </div>
-            
             
             <div class="form-group">
                 <label>Preferred Color</label>
-                <input type="text" name="car_color" placeholder="e.g. Black, Nardo Gray, Red..." required>
+                <input type="text" name="car_color" placeholder="e.g. Black, Nardo Gray, Red..." value="<?php echo $prefill_color; ?>" required>
             </div>
             
             <div class="form-group">
                 <label>Additional Notes</label>
-                <textarea name="additional_notes" placeholder="e.g. Must have sunroof, leather seats..."></textarea>
+                <textarea name="additional_notes" placeholder="e.g. Specific color preferences, must have sunroof..."></textarea>
             </div>
             
             <div class="btn-container">
