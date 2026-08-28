@@ -7,7 +7,14 @@ if(!isset($_SESSION["email"]) || $_SESSION["role"] !== "Customer") {
 }
 
 include '../db.php';
+
 $email = $_SESSION["email"];
+
+
+$searchQuery = "";
+if(isset($_GET['search']) && !empty(trim($_GET['search']))) {
+    $searchQuery = trim($_GET['search']);
+}
 ?>
 <!DOCTYPE html>
 <html>
@@ -17,45 +24,51 @@ $email = $_SESSION["email"];
         * { box-sizing: border-box; font-family: Arial, sans-serif; }
         body { margin: 0; padding: 0; background-color: #0a192f; color: white; }
         
-        
-        .sidebar { width: 20%; float: left; height: 100vh; background-color: #000000; padding: 20px; }
+        .sidebar { width: 20%; float: left; height: 100vh; background-color: #000000; padding: 20px; position: fixed; }
         .sidebar h2 { color: #ffffff; margin-bottom: 40px; text-align: center; }
         .sidebar a { display: block; color: white; padding: 15px; text-decoration: none; margin-bottom: 10px; border-radius: 8px; background-color: #1a1a1a; }
         .sidebar a.active, .sidebar a:hover { background-color: #0a66c2; }
         .sidebar a.logout { background-color: #cc0000; margin-top: 50px; }
 
+        .main-content { width: 80%; float: right; padding: 40px; height: 100vh; overflow-y: auto; }
         
-        .main-content { width: 80%; float: left; padding: 40px; height: 100vh; overflow-y: auto; }
         
-       
+        .search-area { margin-bottom: 30px; width: 100%; overflow: hidden; }
+        .search-area input[type="text"] { width: 70%; padding: 15px; border-radius: 20px; border: none; font-size: 16px; float: left; }
+        .search-area button { width: 20%; padding: 15px; border-radius: 20px; border: none; background-color: #cccccc; font-size: 16px; font-weight: bold; cursor: pointer; float: left; margin-left: 2%; }
+        .search-area button:hover { background-color: #b3b3b3; }
+
+        
         .row-container { width: 100%; overflow: hidden; clear: both; }
         .col-half { width: 48%; float: left; }
         .col-half.right { float: right; }
 
-        .search-area { margin-bottom: 30px; }
-        .search-area input[type="text"] { width: 70%; padding: 15px; border-radius: 20px; border: none; font-size: 16px; }
-        .search-area button { width: 20%; padding: 15px; border-radius: 20px; border: none; background-color: #cccccc; font-size: 16px; font-weight: bold; cursor: pointer; margin-left: 10px; }
-
-        h2.section-title { margin-bottom: 20px; }
+        .section-title { margin-top: 0; font-size: 20px; margin-bottom: 20px; }
 
         
-        .car-card { background-color: white; color: black; padding: 20px; border-radius: 15px; margin-bottom: 20px; overflow: hidden; }
+        .car-card {
+            background-color: white;
+            color: black;
+            padding: 15px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            width: 100%;
+            overflow: hidden;
+            box-sizing: border-box;
+        }
         
+        .car-info { width: 60%; float: left; }
+        .car-info h3 { margin-top: 0; font-size: 16px; margin-bottom: 8px; }
+        .car-info p { color: #666666; margin-bottom: 10px; font-size: 13px; margin-top: 0; }
         
-        .car-info { width: 65%; float: left; }
-        .car-info h3 { margin-top: 0; font-size: 22px; margin-bottom: 5px; }
-        .car-info p { color: #666666; margin-top: 0; margin-bottom: 15px; }
-        
-        .status-badge { color: white; padding: 5px 15px; border-radius: 20px; font-weight: bold; font-size: 14px; }
-        .transaction-info { font-weight: bold; font-size: 16px; margin-left: 10px; }
-        .date-text { color: #888888; font-weight: normal; }
+        .status-badge { color: white; padding: 4px 10px; border-radius: 20px; font-weight: bold; font-size: 11px; }
+        .transaction-info { font-weight: bold; font-size: 13px; margin-left: 8px; }
+        .date-text { font-size: 11px; color: #666666; font-weight: normal; }
 
-        
-        .car-image-container { width: 35%; float: right; text-align: right; }
-        .car-image-container img { width: 100%; max-width: 200px; height: auto; object-fit: contain; }
+        .car-image-container { width: 40%; float: right; text-align: right; }
+        .car-image-container img { width: 100%; max-width: 140px; height: 90px; object-fit: fill; border-radius: 5px; }
 
-        
-        .action-btn { display: block; width: 100%; clear: both; text-align: center; padding: 10px; border-radius: 10px; text-decoration: none; font-weight: bold; margin-top: 15px; }
+        .action-btn { display: block; width: 100%; clear: both; text-align: center; padding: 10px; border-radius: 10px; text-decoration: none; font-weight: bold; margin-top: 15px; font-size: 13px; box-sizing: border-box; }
     </style>
 </head>
 <body>
@@ -64,27 +77,35 @@ $email = $_SESSION["email"];
         <h2>AutoMart</h2>
         <a href="customer_dashboard.php">Explore your next car</a>
         <a href="make_request.php">Make a Request</a>
-        <a href="trade_in.php">Trade-in/ Sell</a>
+        <a href="trade_in.php">Trade-in</a>
         <a href="order_status.php" class="active">Order Status</a>
         <a href="../logout.php" class="logout">Logout</a>
     </div>
 
     <div class="main-content">
         
-        <div class="search-area">
-            <input type="text" placeholder="Search Orders...">
-            <button>Filter</button>
-        </div>
+        
+        <form class="search-area" action="order_status.php" method="GET">
+            <input type="text" name="search" placeholder="Search by Car Make or Model..." value="<?php echo htmlspecialchars($searchQuery); ?>">
+            <button type="submit">Search Order</button>
+        </form>
 
-       <div class="row-container">
+        <div class="row-container">
             
             
             <div class="col-half">
                 <h2 class="section-title">Recent Ordered Activity</h2>
                 
                 <?php
-                $stmt = $conn->prepare("SELECT s.Sale_Id, s.Vehicle_Id, s.Status, s.Sale_Price, s.Order_Date, v.Year, v.Make, v.Model, v.Condition_Status, v.Mileage, v.Color, v.Body_Type, v.Image FROM SALE s JOIN VEHICLE v ON s.Vehicle_Id = v.Vehicle_Id WHERE s.Customer_Email = ? ORDER BY s.Order_Date DESC");
-                $stmt->bind_param("s", $email);
+                if(!empty($searchQuery)) {
+                    $searchTerm = "%" . $searchQuery . "%";
+                    $stmt = $conn->prepare("SELECT s.Sale_Id, s.Vehicle_Id, s.Status, s.Sale_Price, s.Order_Date, v.Year, v.Make, v.Model, v.Condition_Status, v.Mileage, v.Color, v.Body_Type, v.Image FROM SALE s JOIN VEHICLE v ON s.Vehicle_Id = v.Vehicle_Id WHERE s.Customer_Email = ? AND (v.Make LIKE ? OR v.Model LIKE ?) ORDER BY s.Order_Date DESC");
+                    $stmt->bind_param("sss", $email, $searchTerm, $searchTerm);
+                } else {
+                    $stmt = $conn->prepare("SELECT s.Sale_Id, s.Vehicle_Id, s.Status, s.Sale_Price, s.Order_Date, v.Year, v.Make, v.Model, v.Condition_Status, v.Mileage, v.Color, v.Body_Type, v.Image FROM SALE s JOIN VEHICLE v ON s.Vehicle_Id = v.Vehicle_Id WHERE s.Customer_Email = ? ORDER BY s.Order_Date DESC");
+                    $stmt->bind_param("s", $email);
+                }
+                
                 $stmt->execute();
                 $result = $stmt->get_result();
 
@@ -118,7 +139,7 @@ $email = $_SESSION["email"];
                         </div>';
                     }
                 } else {
-                    echo "<p>You have no recent activity.</p>";
+                    echo "<p>No ordered activity found.</p>";
                 }
                 $stmt->close();
                 ?>
@@ -129,8 +150,15 @@ $email = $_SESSION["email"];
                 <h2 class="section-title">Recent Custom Car Requests</h2>
                 
                 <?php
-                $reqStmt = $conn->prepare("SELECT * FROM CAR_REQUEST WHERE Customer_Email = ? ORDER BY Request_Date DESC");
-                $reqStmt->bind_param("s", $email);
+                if(!empty($searchQuery)) {
+                    $searchTerm = "%" . $searchQuery . "%";
+                    $reqStmt = $conn->prepare("SELECT * FROM CAR_REQUEST WHERE Customer_Email = ? AND (Car_Make LIKE ? OR Car_Model LIKE ?) ORDER BY Request_Date DESC");
+                    $reqStmt->bind_param("sss", $email, $searchTerm, $searchTerm);
+                } else {
+                    $reqStmt = $conn->prepare("SELECT * FROM CAR_REQUEST WHERE Customer_Email = ? ORDER BY Request_Date DESC");
+                    $reqStmt->bind_param("s", $email);
+                }
+                
                 $reqStmt->execute();
                 $reqResult = $reqStmt->get_result();
 
@@ -140,7 +168,6 @@ $email = $_SESSION["email"];
                         
                         if ($status == 'Pending') {
                             $badgeBg = '#f1c40f'; $btnBg = '#e3d596'; $btnColor = '#000000'; $btnText = "Cancel Request";
-                            
                             $actionLink = "cancel_custom_request.php?req_id=" . $req["Request_Id"];
                         } elseif ($status == 'Approved' || $status == 'Found') {
                             $badgeBg = '#4CAF50'; $btnBg = '#c8e6c9'; $btnColor = '#256029'; $btnText = "Supplier Found a Match!"; $actionLink = "#";
@@ -159,12 +186,11 @@ $email = $_SESSION["email"];
                                 <span class="status-badge" style="background-color: ' . $badgeBg . ';">' . $status . '</span>
                                 <span class="transaction-info">Max Budget: $' . number_format($req["Max_Budget"]) . ' <br><span class="date-text">on ' . $reqDate . '</span></span>
                             </div>
-                            
                             <a href="' . $actionLink . '" class="action-btn" style="background-color: ' . $btnBg . '; color: ' . $btnColor . ';">' . $btnText . '</a>
                         </div>';
                     }
                 } else {
-                    echo "<p>You have no pending custom requests.</p>";
+                    echo "<p>No custom requests found.</p>";
                 }
                 $reqStmt->close();
                 ?>
@@ -172,5 +198,6 @@ $email = $_SESSION["email"];
 
         </div> 
     </div>
+
 </body>
 </html>
