@@ -83,23 +83,30 @@ include '../db.php';
             margin-left: 10px;
         }
 
+        
         .car-card {
             background-color: white;
             color: black;
             padding: 20px;
             border-radius: 15px;
             margin-bottom: 20px;
+            overflow: hidden; 
         }
-        .car-card h3 {
+        
+        
+        .car-info {
+            width: 65%;
+            float: left;
+        }
+        .car-info h3 {
             margin-top: 0;
             font-size: 22px;
         }
-        .car-card p {
+        .car-info p {
             color: #666666;
             margin-bottom: 15px;
         }
         .status-badge {
-            background-color: #4CAF50;
             color: white;
             padding: 5px 15px;
             border-radius: 20px;
@@ -111,10 +118,25 @@ include '../db.php';
             font-size: 16px;
             margin-left: 10px;
         }
+
+        
+        .car-image-container {
+            width: 35%;
+            float: right;
+            text-align: right;
+        }
+        .car-image-container img {
+            width: 100%;
+            max-width: 200px;
+            height: auto;
+            object-fit: contain;
+        }
+
+        
         .view-details {
             display: block;
-            background-color: #a3d9a5;
-            color: #004d00;
+            width: 100%;
+            clear: both;
             text-align: center;
             padding: 10px;
             border-radius: 10px;
@@ -148,8 +170,25 @@ include '../db.php';
 
         if ($result && $result->num_rows > 0) {
             while($row = $result->fetch_assoc()) {
-                $badgeColor = ($row["Availability"] == 'Available') ? '#4CAF50' : '#cc0000';
                 
+                $availability = $row["Availability"];
+                
+                
+                if ($availability == 'Available') {
+                    $badgeBg = '#4CAF50'; 
+                    $btnBg = '#c8e6c9';   
+                    $btnColor = '#256029'; 
+                } elseif ($availability == 'Pending') {
+                    $badgeBg = '#f1c40f'; 
+                    $btnBg = '#e3d596';   
+                    $btnColor = '#000000'; 
+                } else {
+                    $badgeBg = '#d9534f'; 
+                    $btnBg = '#ffcdd2';   
+                    $btnColor = '#c62828'; 
+                }
+
+                $imagePath = !empty($row["Image"]) ? '../Assets/' . $row["Image"] : '../Assets/default_car.png';
                 if($row["Condition_Status"] == 'Brand New') {
                     $details = "Brand New | " . $row["Color"] . " | " . $row["Body_Type"];
                 } else {
@@ -158,11 +197,16 @@ include '../db.php';
 
                 echo '
                 <div class="car-card">
-                    <h3>' . $row["Year"] . ' ' . $row["Make"] . ' ' . $row["Model"] . '</h3>
-                    <p>' . $details . '</p>
-                    <span class="status-badge" style="background-color: ' . $badgeColor . ';">' . $row["Availability"] . '</span>
-                    <span class="price">Starts at $' . number_format($row["Listed_Price"]) . '</span>
-                    <a href="#" class="view-details">View Details</a>
+                    <div class="car-info">
+                        <h3>' . $row["Year"] . ' ' . $row["Make"] . ' ' . $row["Model"] . '</h3>
+                        <p>' . $details . '</p>
+                        <span class="status-badge" style="background-color: ' . $badgeBg . ';">' . $row["Availability"] . '</span>
+                        <span class="price">Starts at $' . number_format($row["Listed_Price"]) . '</span>
+                    </div>
+                    <div class="car-image-container">
+                        <img src="' . $imagePath . '" alt="' . $row["Make"] . ' ' . $row["Model"] . '">
+                    </div>
+                   <a href="car_details.php?id=' . $row["Vehicle_Id"] . '" class="view-details" style="background-color: ' . $btnBg . '; color: ' . $btnColor . ';">View Details</a>
                 </div>';
             }
         } else {
