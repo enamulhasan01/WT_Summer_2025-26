@@ -111,8 +111,11 @@ if(isset($_GET['search']) && !empty(trim($_GET['search']))) {
 
                 if ($result && $result->num_rows > 0) {
                     while($row = $result->fetch_assoc()) {
+                        
+                        
                         if ($row["Status"] == 'Approved') {
-                            $badgeBg = '#4CAF50'; $btnBg = '#c8e6c9'; $btnColor = '#256029'; $btnText = "View Details"; $actionLink = "#";
+                            $badgeBg = '#4CAF50'; $btnBg = '#c8e6c9'; $btnColor = '#256029'; $btnText = "View Details"; 
+                            $actionLink = "order_details.php?sale_id=" . $row["Sale_Id"]; 
                         } elseif ($row["Status"] == 'Pending') {
                             $badgeBg = '#f1c40f'; $btnBg = '#e3d596'; $btnColor = '#000000'; $btnText = "Cancel Request";
                             $actionLink = "cancel_request.php?sale_id=" . $row["Sale_Id"] . "&vehicle_id=" . $row["Vehicle_Id"];
