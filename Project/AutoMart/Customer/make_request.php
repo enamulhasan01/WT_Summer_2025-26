@@ -8,18 +8,20 @@ if(!isset($_SESSION["email"]) || $_SESSION["role"] !== "Customer") {
 
 include '../db.php';
 
-
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $email = $_SESSION["email"];
     $make = $_POST["car_make"];
     $model = $_POST["car_model"];
     $year_range = $_POST["year_range"];
     $budget = $_POST["max_budget"];
+    $color = $_POST["car_color"]; 
     $notes = $_POST["additional_notes"];
 
     
-    $stmt = $conn->prepare("INSERT INTO CAR_REQUEST (Customer_Email, Car_Make, Car_Model, Year_Range, Max_Budget, Additional_Notes) VALUES (?, ?, ?, ?, ?, ?)");
-    $stmt->bind_param("ssssis", $email, $make, $model, $year_range, $budget, $notes);
+    $stmt = $conn->prepare("INSERT INTO CAR_REQUEST (Customer_Email, Car_Make, Car_Model, Year_Range, Max_Budget, Color, Additional_Notes) VALUES (?, ?, ?, ?, ?, ?, ?)");
+    
+    
+    $stmt->bind_param("ssssiss", $email, $make, $model, $year_range, $budget, $color, $notes);
     
     if ($stmt->execute()) {
         echo "<script>
@@ -40,16 +42,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         * { box-sizing: border-box; font-family: Arial, sans-serif; }
         body { margin: 0; padding: 0; background-color: #0a192f; color: white; }
         
-        
         .sidebar { width: 20%; float: left; height: 100vh; background-color: #000000; padding: 20px; }
         .sidebar h2 { color: #ffffff; margin-bottom: 40px; text-align: center; }
         .sidebar a { display: block; color: white; padding: 15px; text-decoration: none; margin-bottom: 10px; border-radius: 8px; background-color: #1a1a1a; }
         .sidebar a.active, .sidebar a:hover { background-color: #0a66c2; }
         .sidebar a.logout { background-color: #cc0000; margin-top: 50px; }
-
         
         .main-content { width: 80%; float: left; padding: 40px; height: 100vh; overflow-y: auto; }
-        
         
         .request-form { width: 70%; margin-top: 20px; }
         .form-group { margin-bottom: 20px; }
@@ -83,7 +82,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             height: 100px;
             border-radius: 15px;
         }
-
         
         .btn-container { text-align: left; margin-top: 30px; }
         
@@ -132,15 +130,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             
             <div class="form-group">
                 <label>Car Make</label>
-                <select name="car_make" required>
-                    <option value="" disabled selected>e.g. BMW, Toyota, Honda...</option>
-                    <option value="Audi">Audi</option>
-                    <option value="BMW">BMW</option>
-                    <option value="Ford">Ford</option>
-                    <option value="Honda">Honda</option>
-                    <option value="Mercedes-Benz">Mercedes-Benz</option>
-                    <option value="Toyota">Toyota</option>
-                </select>
+                <input type="text" name="car_make" list="car_brands" placeholder="e.g. BMW, Toyota, Honda..." required>
+                <datalist id="car_brands">
+                    <option value="Audi">
+                    <option value="BMW">
+                    <option value="Ford">
+                    <option value="Honda">
+                    <option value="Mercedes-Benz">
+                    <option value="Porsche">
+                    <option value="Toyota">
+                </datalist>
             </div>
             
             <div class="form-group">
@@ -158,9 +157,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 <input type="number" name="max_budget" placeholder="e.g. 90000" required>
             </div>
             
+            
+            <div class="form-group">
+                <label>Preferred Color</label>
+                <input type="text" name="car_color" placeholder="e.g. Black, Nardo Gray, Red..." required>
+            </div>
+            
             <div class="form-group">
                 <label>Additional Notes</label>
-                <textarea name="additional_notes" placeholder="e.g. Specific color preferences, must have sunroof..."></textarea>
+                <textarea name="additional_notes" placeholder="e.g. Must have sunroof, leather seats..."></textarea>
             </div>
             
             <div class="btn-container">
