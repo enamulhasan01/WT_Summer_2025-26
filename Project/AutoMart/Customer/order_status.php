@@ -75,8 +75,8 @@ $email = $_SESSION["email"];
 
         <?php
         
-        $stmt = $conn->prepare("
-            SELECT s.Sale_Id, s.Status, s.Sale_Price, s.Order_Date, 
+       $stmt = $conn->prepare("
+            SELECT s.Sale_Id, s.Vehicle_Id, s.Status, s.Sale_Price, s.Order_Date, 
                    v.Year, v.Make, v.Model, v.Condition_Status, v.Mileage, v.Color, v.Body_Type, v.Image 
             FROM SALE s 
             JOIN VEHICLE v ON s.Vehicle_Id = v.Vehicle_Id 
