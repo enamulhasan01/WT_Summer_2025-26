@@ -51,7 +51,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         
         .main-content { width: 80%; float: right; padding: 40px; height: 100vh; overflow-y: auto; }
         
-        .request-form { width: 70%; margin-top: 20px; }
+        
+        .row-container { width: 100%; overflow: hidden; clear: both; }
+        .col-half { width: 48%; float: left; }
+        .col-half.right { float: right; }
+
+        .request-form { width: 100%; margin-top: 20px; } 
         .form-group { margin-bottom: 20px; }
         
         .form-group label {
@@ -79,21 +84,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         
         .btn-container { text-align: left; margin-top: 30px; }
         
-        .btn-clear {
-            background-color: #666666;
-            color: white;
-            padding: 15px 30px;
-            border-radius: 20px;
-            border: none;
-            font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
-            margin-right: 15px;
-        }
-        
-        .btn-submit {
-            background-color: #4CAF50; 
-            color: white;
+        .btn-clear, .btn-submit {
             padding: 15px 30px;
             border-radius: 20px;
             border: none;
@@ -101,9 +92,28 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             font-weight: bold;
             cursor: pointer;
         }
+        .btn-clear { background-color: #666666; color: white; margin-right: 15px; }
+        .btn-submit { background-color: #4CAF50; color: white; }
         
         .btn-clear:hover { background-color: #4d4d4d; }
         .btn-submit:hover { background-color: #45a049; }
+
+        
+        .car-card {
+            background-color: white;
+            color: black;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        .car-info h3 { margin-top: 0; font-size: 17px; margin-bottom: 8px; }
+        .car-info p { color: #666666; margin-bottom: 15px; font-size: 14px; margin-top: 0; }
+        
+        .status-badge { color: white; padding: 5px 12px; border-radius: 20px; font-weight: bold; font-size: 12px; }
+        .transaction-info { font-weight: bold; font-size: 14px; margin-left: 8px; }
+        .date-text { font-size: 12px; color: #666666; font-weight: normal; display: block; margin-top: 5px;}
     </style>
 </head>
 <body>
@@ -118,62 +128,113 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     </div>
 
     <div class="main-content">
-        <h2>Submit your car for a Trade-in or Cash Offer</h2>
         
-        <form class="request-form" action="" method="POST">
+        <div class="row-container">
             
-            <div class="form-group">
-                <label>Car Make</label>
-                <input type="text" name="car_make" list="car_brands" placeholder="e.g. BMW, Toyota, Honda..." required>
-                <datalist id="car_brands">
-                    <option value="Audi">
-                    <option value="BMW">
-                    <option value="Ford">
-                    <option value="Honda">
-                    <option value="Mercedes-Benz">
-                    <option value="Porsche">
-                    <option value="Toyota">
-                </datalist>
+            <div class="col-half">
+                <h2>Submit your car for a Trade-in</h2>
+                
+                <form class="request-form" action="" method="POST">
+                    
+                    <div class="form-group">
+                        <label>Car Make</label>
+                        <input type="text" name="car_make" list="car_brands" placeholder="e.g. BMW, Toyota, Honda..." required>
+                        <datalist id="car_brands">
+                            <option value="Audi">
+                            <option value="BMW">
+                            <option value="Ford">
+                            <option value="Honda">
+                            <option value="Mercedes-Benz">
+                            <option value="Porsche">
+                            <option value="Toyota">
+                        </datalist>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Car Model</label>
+                        <input type="text" name="car_model" placeholder="e.g. Camry, F-150..." required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Manufacture Year</label>
+                        <input type="number" name="car_year" placeholder="e.g. 2019" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Current Mileage (km)</label>
+                        <input type="number" name="car_mileage" placeholder="e.g. 45000" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Overall Condition</label>
+                        <select name="car_condition" required>
+                            <option value="" disabled selected>Select condition...</option>
+                            <option value="Excellent">Excellent (Like New)</option>
+                            <option value="Good">Good (Minor wear)</option>
+                            <option value="Fair">Fair (Needs minor repairs)</option>
+                            <option value="Poor">Poor (Needs major repairs)</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Expected Price ($)</label>
+                        <input type="number" name="expected_price" placeholder="e.g. 15000" required>
+                    </div>
+                    
+                    <div class="btn-container">
+                        <button type="reset" class="btn-clear">Clear All</button>
+                        <button type="submit" class="btn-submit">Submit Details</button>
+                    </div>
+                    
+                </form>
             </div>
-            
-            <div class="form-group">
-                <label>Car Model</label>
-                <input type="text" name="car_model" placeholder="e.g. Camry, F-150..." required>
-            </div>
-            
-            <div class="form-group">
-                <label>Manufacture Year</label>
-                <input type="number" name="car_year" placeholder="e.g. 2019" required>
-            </div>
-            
-            <div class="form-group">
-                <label>Current Mileage (km)</label>
-                <input type="number" name="car_mileage" placeholder="e.g. 45000" required>
-            </div>
-            
-            <div class="form-group">
-                <label>Overall Condition</label>
-                <select name="car_condition" required>
-                    <option value="" disabled selected>Select condition...</option>
-                    <option value="Excellent">Excellent (Like New)</option>
-                    <option value="Good">Good (Minor wear)</option>
-                    <option value="Fair">Fair (Needs minor repairs)</option>
-                    <option value="Poor">Poor (Needs major repairs)</option>
-                </select>
-            </div>
-            
-            <div class="form-group">
-                <label>Expected Price ($)</label>
-                <input type="number" name="expected_price" placeholder="e.g. 15000" required>
-            </div>
-            
-            <div class="btn-container">
-                <button type="reset" class="btn-clear">Clear All</button>
-                <button type="submit" class="btn-submit">Submit Details</button>
-            </div>
-            
-        </form>
 
+            
+            <div class="col-half right">
+                <h2>Your Trade-in Requests</h2>
+                
+                <?php
+                $email = $_SESSION["email"];
+                $reqStmt = $conn->prepare("SELECT * FROM TRADE_IN WHERE Customer_Email = ? ORDER BY Request_Date DESC");
+                $reqStmt->bind_param("s", $email);
+                $reqStmt->execute();
+                $reqResult = $reqStmt->get_result();
+
+                if ($reqResult && $reqResult->num_rows > 0) {
+                    while($req = $reqResult->fetch_assoc()) {
+                        
+                        $status = $req["Status"];
+                        
+                        
+                        if ($status == 'Pending') {
+                            $badgeBg = '#f1c40f'; 
+                        } elseif ($status == 'Approved' || $status == 'Accepted') {
+                            $badgeBg = '#4CAF50'; 
+                        } else {
+                            $badgeBg = '#d9534f'; 
+                        }
+
+                        $reqDate = date("F j, Y", strtotime($req["Request_Date"]));
+                        
+                        echo '
+                        <div class="car-card">
+                            <div class="car-info">
+                                <h3>' . $req["Year"] . ' ' . $req["Car_Make"] . ' ' . $req["Car_Model"] . '</h3>
+                                <p>Mileage: ' . number_format($req["Mileage"]) . ' km | Condition: ' . $req["Condition_Status"] . '</p>
+                                <span class="status-badge" style="background-color: ' . $badgeBg . ';">' . $status . '</span>
+                                <span class="transaction-info">Asking: $' . number_format($req["Expected_Price"]) . ' <br><span class="date-text">Submitted on ' . $reqDate . '</span></span>
+                            </div>
+                        </div>';
+                    }
+                } else {
+                    echo "<p>You have no pending trade-in requests.</p>";
+                }
+                $reqStmt->close();
+                ?>
+            </div>
+            
+        </div> 
+        
     </div>
 
 </body>
