@@ -91,24 +91,27 @@ $email = $_SESSION["email"];
             while($row = $result->fetch_assoc()) {
                 
                 
+                
                 if ($row["Status"] == 'Approved') {
                     $badgeBg = '#4CAF50'; 
                     $btnBg = '#c8e6c9'; 
                     $btnColor = '#256029';
                     $btnText = "View Details";
+                    $actionLink = "#";
                 } elseif ($row["Status"] == 'Pending') {
                     $badgeBg = '#f1c40f'; 
                     $btnBg = '#e3d596'; 
                     $btnColor = '#000000';
                     $btnText = "Cancel Request";
-                } else {
                     
+                    $actionLink = "cancel_request.php?sale_id=" . $row["Sale_Id"] . "&vehicle_id=" . $row["Vehicle_Id"];
+                } else {
                     $badgeBg = '#d9534f'; 
                     $btnBg = '#ffcdd2'; 
                     $btnColor = '#c62828';
                     $btnText = "View Details";
+                    $actionLink = "#";
                 }
-
                 
                 $imagePath = !empty($row["Image"]) ? '../Assets/' . $row["Image"] : '../Assets/default_car.png';
                 $orderDate = date("F j, Y", strtotime($row["Order_Date"])); 
@@ -130,7 +133,7 @@ $email = $_SESSION["email"];
                     <div class="car-image-container">
                         <img src="' . $imagePath . '" alt="' . $row["Make"] . '">
                     </div>
-                    <a href="#" class="action-btn" style="background-color: ' . $btnBg . '; color: ' . $btnColor . ';">' . $btnText . '</a>
+                   <a href="' . $actionLink . '" class="action-btn" style="background-color: ' . $btnBg . '; color: ' . $btnColor . ';">' . $btnText . '</a>
                 </div>';
             }
         } else {
