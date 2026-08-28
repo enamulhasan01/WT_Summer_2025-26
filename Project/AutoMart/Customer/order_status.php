@@ -27,6 +27,11 @@ $email = $_SESSION["email"];
         
         .main-content { width: 80%; float: left; padding: 40px; height: 100vh; overflow-y: auto; }
         
+       
+        .row-container { width: 100%; overflow: hidden; clear: both; }
+        .col-half { width: 48%; float: left; }
+        .col-half.right { float: right; }
+
         .search-area { margin-bottom: 30px; }
         .search-area input[type="text"] { width: 70%; padding: 15px; border-radius: 20px; border: none; font-size: 16px; }
         .search-area button { width: 20%; padding: 15px; border-radius: 20px; border: none; background-color: #cccccc; font-size: 16px; font-weight: bold; cursor: pointer; margin-left: 10px; }
@@ -71,134 +76,101 @@ $email = $_SESSION["email"];
             <button>Filter</button>
         </div>
 
-        <h2 class="section-title">Recent Activity</h2>
+       <div class="row-container">
+            
+            
+            <div class="col-half">
+                <h2 class="section-title">Recent Ordered Activity</h2>
+                
+                <?php
+                $stmt = $conn->prepare("SELECT s.Sale_Id, s.Vehicle_Id, s.Status, s.Sale_Price, s.Order_Date, v.Year, v.Make, v.Model, v.Condition_Status, v.Mileage, v.Color, v.Body_Type, v.Image FROM SALE s JOIN VEHICLE v ON s.Vehicle_Id = v.Vehicle_Id WHERE s.Customer_Email = ? ORDER BY s.Order_Date DESC");
+                $stmt->bind_param("s", $email);
+                $stmt->execute();
+                $result = $stmt->get_result();
 
-        <?php
-        
-       $stmt = $conn->prepare("
-            SELECT s.Sale_Id, s.Vehicle_Id, s.Status, s.Sale_Price, s.Order_Date, 
-                   v.Year, v.Make, v.Model, v.Condition_Status, v.Mileage, v.Color, v.Body_Type, v.Image 
-            FROM SALE s 
-            JOIN VEHICLE v ON s.Vehicle_Id = v.Vehicle_Id 
-            WHERE s.Customer_Email = ? 
-            ORDER BY s.Order_Date DESC
-        ");
-        $stmt->bind_param("s", $email);
-        $stmt->execute();
-        $result = $stmt->get_result();
+                if ($result && $result->num_rows > 0) {
+                    while($row = $result->fetch_assoc()) {
+                        if ($row["Status"] == 'Approved') {
+                            $badgeBg = '#4CAF50'; $btnBg = '#c8e6c9'; $btnColor = '#256029'; $btnText = "View Details"; $actionLink = "#";
+                        } elseif ($row["Status"] == 'Pending') {
+                            $badgeBg = '#f1c40f'; $btnBg = '#e3d596'; $btnColor = '#000000'; $btnText = "Cancel Request";
+                            $actionLink = "cancel_request.php?sale_id=" . $row["Sale_Id"] . "&vehicle_id=" . $row["Vehicle_Id"];
+                        } else {
+                            $badgeBg = '#d9534f'; $btnBg = '#ffcdd2'; $btnColor = '#c62828'; $btnText = "Order Cancelled"; $actionLink = "#";
+                        }
 
-        if ($result && $result->num_rows > 0) {
-            while($row = $result->fetch_assoc()) {
-                
-                
-                
-                if ($row["Status"] == 'Approved') {
-                    $badgeBg = '#4CAF50'; 
-                    $btnBg = '#c8e6c9'; 
-                    $btnColor = '#256029';
-                    $btnText = "View Details";
-                    $actionLink = "#";
-                } elseif ($row["Status"] == 'Pending') {
-                    $badgeBg = '#f1c40f'; 
-                    $btnBg = '#e3d596'; 
-                    $btnColor = '#000000';
-                    $btnText = "Cancel Request";
-                    
-                    $actionLink = "cancel_request.php?sale_id=" . $row["Sale_Id"] . "&vehicle_id=" . $row["Vehicle_Id"];
+                        $imagePath = !empty($row["Image"]) ? '../Assets/' . $row["Image"] : '../Assets/default_car.png';
+                        $orderDate = date("F j, Y", strtotime($row["Order_Date"]));
+                        $details = ($row["Condition_Status"] == 'Brand New') ? "Brand New | " . $row["Color"] . " | " . $row["Body_Type"] : "Mileage: " . number_format($row["Mileage"]) . " km | " . $row["Color"] . " | " . $row["Body_Type"];
+
+                        echo '
+                        <div class="car-card">
+                            <div class="car-info">
+                                <h3>' . $row["Year"] . ' ' . $row["Make"] . ' ' . $row["Model"] . '</h3>
+                                <p>' . $details . '</p>
+                                <span class="status-badge" style="background-color: ' . $badgeBg . ';">' . $row["Status"] . '</span>
+                                <span class="transaction-info">at $' . number_format($row["Sale_Price"]) . ' <br><span class="date-text">on ' . $orderDate . '</span></span>
+                            </div>
+                            <div class="car-image-container">
+                                <img src="' . $imagePath . '" alt="Car">
+                            </div>
+                            <a href="' . $actionLink . '" class="action-btn" style="background-color: ' . $btnBg . '; color: ' . $btnColor . ';">' . $btnText . '</a>
+                        </div>';
+                    }
                 } else {
-                    $badgeBg = '#d9534f'; 
-                    $btnBg = '#ffcdd2'; 
-                    $btnColor = '#c62828';
-                   $btnText = "Order Cancelled";
-                    $actionLink = "#";
+                    echo "<p>You have no recent activity.</p>";
                 }
-                
-                $imagePath = !empty($row["Image"]) ? '../Assets/' . $row["Image"] : '../Assets/default_car.png';
-                $orderDate = date("F j, Y", strtotime($row["Order_Date"])); 
-                
-                if($row["Condition_Status"] == 'Brand New') {
-                    $details = "Brand New | " . $row["Color"] . " | " . $row["Body_Type"];
-                } else {
-                    $details = "Mileage: " . number_format($row["Mileage"]) . " km | " . $row["Color"] . " | " . $row["Body_Type"];
-                }
+                $stmt->close();
+                ?>
+            </div>
 
-                echo '
-                <div class="car-card">
-                    <div class="car-info">
-                        <h3>' . $row["Year"] . ' ' . $row["Make"] . ' ' . $row["Model"] . '</h3>
-                        <p>' . $details . '</p>
-                        <span class="status-badge" style="background-color: ' . $badgeBg . ';">' . $row["Status"] . '</span>
-                        <span class="transaction-info">at $' . number_format($row["Sale_Price"]) . ' <span class="date-text">on ' . $orderDate . '</span></span>
-                    </div>
-                    <div class="car-image-container">
-                        <img src="' . $imagePath . '" alt="' . $row["Make"] . '">
-                    </div>
-                   <a href="' . $actionLink . '" class="action-btn" style="background-color: ' . $btnBg . '; color: ' . $btnColor . ';">' . $btnText . '</a>
-                </div>';
-            }
-        } else {
-            echo "<p>You have no recent activity.</p>";
-        }
-        $stmt->close();
-        ?>
-        
-        <h2 class="section-title" style="margin-top: 40px;">Custom Car Requests</h2>
-        
-        <?php
-        
-        $reqStmt = $conn->prepare("SELECT * FROM CAR_REQUEST WHERE Customer_Email = ? ORDER BY Request_Date DESC");
-        $reqStmt->bind_param("s", $email);
-        $reqStmt->execute();
-        $reqResult = $reqStmt->get_result();
+            
+            <div class="col-half right">
+                <h2 class="section-title">Recent Custom Car Requests</h2>
+                
+                <?php
+                $reqStmt = $conn->prepare("SELECT * FROM CAR_REQUEST WHERE Customer_Email = ? ORDER BY Request_Date DESC");
+                $reqStmt->bind_param("s", $email);
+                $reqStmt->execute();
+                $reqResult = $reqStmt->get_result();
 
-        if ($reqResult && $reqResult->num_rows > 0) {
-            while($req = $reqResult->fetch_assoc()) {
-                
-                $status = $req["Status"];
-                
-                
-                if ($status == 'Pending') {
-                    $badgeBg = '#f1c40f'; 
-                    $btnBg = '#e3d596'; 
-                    $btnColor = '#000000';
-                    $btnText = "Cancel Request"; 
-                } elseif ($status == 'Approved' || $status == 'Found') {
-                    $badgeBg = '#4CAF50'; 
-                    $btnBg = '#c8e6c9'; 
-                    $btnColor = '#256029';
-                    $btnText = "Supplier Found a Match!";
-                } else {
-                    $badgeBg = '#d9534f'; 
-                    $btnBg = '#ffcdd2'; 
-                    $btnColor = '#c62828';
-                    $btnText = "Request Closed";
-                }
-
-                $reqDate = date("F j, Y", strtotime($req["Request_Date"]));
-                $notes = !empty($req["Additional_Notes"]) ? $req["Additional_Notes"] : "No additional notes.";
-                
-                echo '
-                <div class="car-card">
-                    <div class="car-info">
-                        <h3>Requested: ' . $req["Car_Make"] . ' ' . $req["Car_Model"] . '</h3>
-                        <p>Preferred Years: ' . $req["Year_Range"] . ' | Notes: ' . $notes . '</p>
-                        <span class="status-badge" style="background-color: ' . $badgeBg . ';">' . $status . '</span>
-                        <span class="transaction-info">Max Budget: $' . number_format($req["Max_Budget"]) . ' <span class="date-text">on ' . $reqDate . '</span></span>
-                    </div>
-                    <div class="car-image-container">
+                if ($reqResult && $reqResult->num_rows > 0) {
+                    while($req = $reqResult->fetch_assoc()) {
+                        $status = $req["Status"];
                         
-                        <img src="../Assets/default_car.png" alt="Custom Request">
-                    </div>
-                    <a href="#" class="action-btn" style="background-color: ' . $btnBg . '; color: ' . $btnColor . ';">' . $btnText . '</a>
-                </div>';
-            }
-        } else {
-            echo "<p>You have no pending custom requests.</p>";
-        }
-        $reqStmt->close();
-        ?>
+                        if ($status == 'Pending') {
+                            $badgeBg = '#f1c40f'; $btnBg = '#e3d596'; $btnColor = '#000000'; $btnText = "Cancel Request";
+                            
+                            $actionLink = "cancel_custom_request.php?req_id=" . $req["Request_Id"];
+                        } elseif ($status == 'Approved' || $status == 'Found') {
+                            $badgeBg = '#4CAF50'; $btnBg = '#c8e6c9'; $btnColor = '#256029'; $btnText = "Supplier Found a Match!"; $actionLink = "#";
+                        } else {
+                            $badgeBg = '#d9534f'; $btnBg = '#ffcdd2'; $btnColor = '#c62828'; $btnText = "Request Cancelled"; $actionLink = "#";
+                        }
 
+                        $reqDate = date("F j, Y", strtotime($req["Request_Date"]));
+                        $notes = !empty($req["Additional_Notes"]) ? $req["Additional_Notes"] : "No additional notes.";
+                        
+                        echo '
+                        <div class="car-card">
+                            <div class="car-info" style="width: 100%;">
+                                <h3>Requested: ' . $req["Car_Make"] . ' ' . $req["Car_Model"] . '</h3>
+                                <p>Preferred Years: ' . $req["Year_Range"] . '<br>Notes: ' . $notes . '</p>
+                                <span class="status-badge" style="background-color: ' . $badgeBg . ';">' . $status . '</span>
+                                <span class="transaction-info">Max Budget: $' . number_format($req["Max_Budget"]) . ' <br><span class="date-text">on ' . $reqDate . '</span></span>
+                            </div>
+                            
+                            <a href="' . $actionLink . '" class="action-btn" style="background-color: ' . $btnBg . '; color: ' . $btnColor . ';">' . $btnText . '</a>
+                        </div>';
+                    }
+                } else {
+                    echo "<p>You have no pending custom requests.</p>";
+                }
+                $reqStmt->close();
+                ?>
+            </div>
+
+        </div> 
     </div>
-
 </body>
 </html>
