@@ -1,0 +1,180 @@
+<?php
+session_start();
+
+if(!isset($_SESSION["email"]) || $_SESSION["role"] !== "Customer") {
+    header("Location: ../login.php");
+    exit();
+}
+
+include '../db.php';
+
+
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $email = $_SESSION["email"];
+    $make = $_POST["car_make"];
+    $model = $_POST["car_model"];
+    $year = $_POST["car_year"];
+    $mileage = $_POST["car_mileage"];
+    $condition = $_POST["car_condition"];
+    $price = $_POST["expected_price"];
+
+    
+    $stmt = $conn->prepare("INSERT INTO TRADE_IN (Customer_Email, Car_Make, Car_Model, Year, Mileage, Condition_Status, Expected_Price) VALUES (?, ?, ?, ?, ?, ?, ?)");
+    
+    
+    $stmt->bind_param("sssiisi", $email, $make, $model, $year, $mileage, $condition, $price);
+    
+    if ($stmt->execute()) {
+        echo "<script>
+            alert('Your trade-in request has been successfully submitted! Our team will evaluate it shortly.');
+            window.location.href = 'trade_in.php';
+        </script>";
+    } else {
+        echo "<script>alert('Error submitting your request. Please try again.');</script>";
+    }
+    $stmt->close();
+}
+?>
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Trade-in / Sell - AutoMart</title>
+    <style>
+        * { box-sizing: border-box; font-family: Arial, sans-serif; }
+        body { margin: 0; padding: 0; background-color: #0a192f; color: white; }
+        
+        .sidebar { width: 20%; float: left; height: 100vh; background-color: #000000; padding: 20px; position: fixed; }
+        .sidebar h2 { color: #ffffff; margin-bottom: 40px; text-align: center; }
+        .sidebar a { display: block; color: white; padding: 15px; text-decoration: none; margin-bottom: 10px; border-radius: 8px; background-color: #1a1a1a; }
+        .sidebar a.active, .sidebar a:hover { background-color: #0a66c2; }
+        .sidebar a.logout { background-color: #cc0000; margin-top: 50px; }
+        
+        .main-content { width: 80%; float: right; padding: 40px; height: 100vh; overflow-y: auto; }
+        
+        .request-form { width: 70%; margin-top: 20px; }
+        .form-group { margin-bottom: 20px; }
+        
+        .form-group label {
+            display: inline-block;
+            background-color: #e3d596; 
+            color: black;
+            padding: 5px 15px;
+            border-radius: 15px;
+            font-weight: bold;
+            font-size: 14px;
+            margin-bottom: 5px;
+        }
+        
+       .form-group input[type="text"], 
+        .form-group input[type="number"],
+        .form-group select {
+            width: 100%;
+            padding: 15px;
+            border-radius: 20px;
+            border: none;
+            background-color: #cccccc; 
+            font-size: 16px;
+            color: #333333;
+        }
+        
+        .btn-container { text-align: left; margin-top: 30px; }
+        
+        .btn-clear {
+            background-color: #666666;
+            color: white;
+            padding: 15px 30px;
+            border-radius: 20px;
+            border: none;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-right: 15px;
+        }
+        
+        .btn-submit {
+            background-color: #4CAF50; 
+            color: white;
+            padding: 15px 30px;
+            border-radius: 20px;
+            border: none;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        
+        .btn-clear:hover { background-color: #4d4d4d; }
+        .btn-submit:hover { background-color: #45a049; }
+    </style>
+</head>
+<body>
+
+    <div class="sidebar">
+        <h2>AutoMart</h2>
+        <a href="customer_dashboard.php">Explore your next car</a>
+        <a href="make_request.php">Make a Request</a>
+        <a href="trade_in.php" class="active">Trade-in/ Sell</a>
+        <a href="order_status.php">Order Status</a>
+        <a href="../logout.php" class="logout">Logout</a>
+    </div>
+
+    <div class="main-content">
+        <h2>Submit your car for a Trade-in or Cash Offer</h2>
+        
+        <form class="request-form" action="" method="POST">
+            
+            <div class="form-group">
+                <label>Car Make</label>
+                <input type="text" name="car_make" list="car_brands" placeholder="e.g. BMW, Toyota, Honda..." required>
+                <datalist id="car_brands">
+                    <option value="Audi">
+                    <option value="BMW">
+                    <option value="Ford">
+                    <option value="Honda">
+                    <option value="Mercedes-Benz">
+                    <option value="Porsche">
+                    <option value="Toyota">
+                </datalist>
+            </div>
+            
+            <div class="form-group">
+                <label>Car Model</label>
+                <input type="text" name="car_model" placeholder="e.g. Camry, F-150..." required>
+            </div>
+            
+            <div class="form-group">
+                <label>Manufacture Year</label>
+                <input type="number" name="car_year" placeholder="e.g. 2019" required>
+            </div>
+            
+            <div class="form-group">
+                <label>Current Mileage (km)</label>
+                <input type="number" name="car_mileage" placeholder="e.g. 45000" required>
+            </div>
+            
+            <div class="form-group">
+                <label>Overall Condition</label>
+                <select name="car_condition" required>
+                    <option value="" disabled selected>Select condition...</option>
+                    <option value="Excellent">Excellent (Like New)</option>
+                    <option value="Good">Good (Minor wear)</option>
+                    <option value="Fair">Fair (Needs minor repairs)</option>
+                    <option value="Poor">Poor (Needs major repairs)</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label>Expected Price ($)</label>
+                <input type="number" name="expected_price" placeholder="e.g. 15000" required>
+            </div>
+            
+            <div class="btn-container">
+                <button type="reset" class="btn-clear">Clear All</button>
+                <button type="submit" class="btn-submit">Submit Details</button>
+            </div>
+            
+        </form>
+
+    </div>
+
+</body>
+</html>
