@@ -18,10 +18,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $condition = $_POST["car_condition"];
     $price = $_POST["expected_price"];
 
-    
     $stmt = $conn->prepare("INSERT INTO TRADE_IN (Customer_Email, Car_Make, Car_Model, Year, Mileage, Condition_Status, Expected_Price) VALUES (?, ?, ?, ?, ?, ?, ?)");
-    
-    
     $stmt->bind_param("sssiisi", $email, $make, $model, $year, $mileage, $condition, $price);
     
     if ($stmt->execute()) {
@@ -34,11 +31,22 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
     $stmt->close();
 }
+
+
+$email = $_SESSION["email"];
+$creditStmt = $conn->prepare("SELECT SUM(Expected_Price) AS Total_Credits FROM TRADE_IN WHERE Customer_Email = ? AND Status = 'Approved'");
+$creditStmt->bind_param("s", $email);
+$creditStmt->execute();
+$creditResult = $creditStmt->get_result();
+$creditRow = $creditResult->fetch_assoc();
+$totalCredits = $creditRow['Total_Credits'] ? $creditRow['Total_Credits'] : 0;
+$creditStmt->close();
+
 ?>
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Trade-in / Sell - AutoMart</title>
+    <title>Trade-in - AutoMart</title>
     <style>
         * { box-sizing: border-box; font-family: Arial, sans-serif; }
         body { margin: 0; padding: 0; background-color: #0a192f; color: white; }
@@ -49,10 +57,24 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         .sidebar a.active, .sidebar a:hover { background-color: #0a66c2; }
         .sidebar a.logout { background-color: #cc0000; margin-top: 50px; }
         
-        .main-content { width: 80%; float: right; padding: 40px; height: 100vh; overflow-y: auto; }
+        .main-content { width: 80%; float: right; padding: 40px; height: 100vh; overflow-y: auto; position: relative; }
         
         
-        .row-container { width: 100%; overflow: hidden; clear: both; }
+        .credits-box {
+            position: absolute;
+            top: 40px;
+            right: 40px;
+            background-color: #1a2a42;
+            border: 2px solid #4CAF50;
+            padding: 15px 25px;
+            border-radius: 12px;
+            text-align: right;
+        }
+        .credits-box span { display: block; font-size: 14px; color: #a0aec0; margin-bottom: 5px; }
+        .credits-box strong { font-size: 22px; color: #4CAF50; }
+
+        
+        .row-container { width: 100%; overflow: hidden; clear: both; margin-top: 60px; }
         .col-half { width: 48%; float: left; }
         .col-half.right { float: right; }
 
@@ -114,6 +136,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         .status-badge { color: white; padding: 5px 12px; border-radius: 20px; font-weight: bold; font-size: 12px; }
         .transaction-info { font-weight: bold; font-size: 14px; margin-left: 8px; }
         .date-text { font-size: 12px; color: #666666; font-weight: normal; display: block; margin-top: 5px;}
+        
+        
+        .action-btn { display: block; width: 100%; text-align: center; padding: 10px; border-radius: 10px; text-decoration: none; font-weight: bold; margin-top: 15px; font-size: 14px; }
     </style>
 </head>
 <body>
@@ -122,12 +147,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <h2>AutoMart</h2>
         <a href="customer_dashboard.php">Explore your next car</a>
         <a href="make_request.php">Make a Request</a>
-        <a href="trade_in.php" class="active">Trade-in/ Sell</a>
+        <a href="trade_in.php" class="active">Trade-in</a>
         <a href="order_status.php">Order Status</a>
         <a href="../logout.php" class="logout">Logout</a>
     </div>
 
     <div class="main-content">
+        
+        
+        <div class="credits-box">
+            <span>Available Trade-in Credits</span>
+            <strong>$<?php echo number_format($totalCredits); ?></strong>
+        </div>
         
         <div class="row-container">
             
@@ -135,7 +166,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 <h2>Submit your car for a Trade-in</h2>
                 
                 <form class="request-form" action="" method="POST">
-                    
                     <div class="form-group">
                         <label>Car Make</label>
                         <input type="text" name="car_make" list="car_brands" placeholder="e.g. BMW, Toyota, Honda..." required>
@@ -177,7 +207,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     </div>
                     
                     <div class="form-group">
-                        <label>Expected Price ($)</label>
+                        <label>Expected Value ($)</label>
                         <input type="number" name="expected_price" placeholder="e.g. 15000" required>
                     </div>
                     
@@ -185,7 +215,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         <button type="reset" class="btn-clear">Clear All</button>
                         <button type="submit" class="btn-submit">Submit Details</button>
                     </div>
-                    
                 </form>
             </div>
 
@@ -194,7 +223,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 <h2>Your Trade-in Requests</h2>
                 
                 <?php
-                $email = $_SESSION["email"];
                 $reqStmt = $conn->prepare("SELECT * FROM TRADE_IN WHERE Customer_Email = ? ORDER BY Request_Date DESC");
                 $reqStmt->bind_param("s", $email);
                 $reqStmt->execute();
@@ -204,7 +232,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     while($req = $reqResult->fetch_assoc()) {
                         
                         $status = $req["Status"];
-                        
                         
                         if ($status == 'Pending') {
                             $badgeBg = '#f1c40f'; 
@@ -223,8 +250,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                 <p>Mileage: ' . number_format($req["Mileage"]) . ' km | Condition: ' . $req["Condition_Status"] . '</p>
                                 <span class="status-badge" style="background-color: ' . $badgeBg . ';">' . $status . '</span>
                                 <span class="transaction-info">Asking: $' . number_format($req["Expected_Price"]) . ' <br><span class="date-text">Submitted on ' . $reqDate . '</span></span>
-                            </div>
-                        </div>';
+                            </div>';
+                            
+                            
+                            if($status == 'Pending') {
+                                echo '<a href="cancel_trade_in.php?id=' . $req["Trade_Id"] . '" class="action-btn" style="background-color: #e3d596; color: black;">Cancel Request</a>';
+                            } elseif ($status == 'Approved') {
+                                echo '<div class="action-btn" style="background-color: #c8e6c9; color: #256029;">Credits Added to Account</div>';
+                            } else {
+                                echo '<div class="action-btn" style="background-color: #ffcdd2; color: #c62828;">Request Cancelled</div>';
+                            }
+                            
+                        echo '</div>';
                     }
                 } else {
                     echo "<p>You have no pending trade-in requests.</p>";
@@ -232,9 +269,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 $reqStmt->close();
                 ?>
             </div>
-            
         </div> 
-        
     </div>
 
 </body>
