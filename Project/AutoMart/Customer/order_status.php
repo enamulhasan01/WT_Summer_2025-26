@@ -141,6 +141,62 @@ $email = $_SESSION["email"];
         }
         $stmt->close();
         ?>
+        
+        <h2 class="section-title" style="margin-top: 40px;">Custom Car Requests</h2>
+        
+        <?php
+        
+        $reqStmt = $conn->prepare("SELECT * FROM CAR_REQUEST WHERE Customer_Email = ? ORDER BY Request_Date DESC");
+        $reqStmt->bind_param("s", $email);
+        $reqStmt->execute();
+        $reqResult = $reqStmt->get_result();
+
+        if ($reqResult && $reqResult->num_rows > 0) {
+            while($req = $reqResult->fetch_assoc()) {
+                
+                $status = $req["Status"];
+                
+                
+                if ($status == 'Pending') {
+                    $badgeBg = '#f1c40f'; 
+                    $btnBg = '#e3d596'; 
+                    $btnColor = '#000000';
+                    $btnText = "Cancel Request"; 
+                } elseif ($status == 'Approved' || $status == 'Found') {
+                    $badgeBg = '#4CAF50'; 
+                    $btnBg = '#c8e6c9'; 
+                    $btnColor = '#256029';
+                    $btnText = "Supplier Found a Match!";
+                } else {
+                    $badgeBg = '#d9534f'; 
+                    $btnBg = '#ffcdd2'; 
+                    $btnColor = '#c62828';
+                    $btnText = "Request Closed";
+                }
+
+                $reqDate = date("F j, Y", strtotime($req["Request_Date"]));
+                $notes = !empty($req["Additional_Notes"]) ? $req["Additional_Notes"] : "No additional notes.";
+                
+                echo '
+                <div class="car-card">
+                    <div class="car-info">
+                        <h3>Requested: ' . $req["Car_Make"] . ' ' . $req["Car_Model"] . '</h3>
+                        <p>Preferred Years: ' . $req["Year_Range"] . ' | Notes: ' . $notes . '</p>
+                        <span class="status-badge" style="background-color: ' . $badgeBg . ';">' . $status . '</span>
+                        <span class="transaction-info">Max Budget: $' . number_format($req["Max_Budget"]) . ' <span class="date-text">on ' . $reqDate . '</span></span>
+                    </div>
+                    <div class="car-image-container">
+                        
+                        <img src="../Assets/default_car.png" alt="Custom Request">
+                    </div>
+                    <a href="#" class="action-btn" style="background-color: ' . $btnBg . '; color: ' . $btnColor . ';">' . $btnText . '</a>
+                </div>';
+            }
+        } else {
+            echo "<p>You have no pending custom requests.</p>";
+        }
+        $reqStmt->close();
+        ?>
 
     </div>
 
