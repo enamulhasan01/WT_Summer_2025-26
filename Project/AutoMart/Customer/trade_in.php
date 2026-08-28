@@ -41,7 +41,6 @@ $creditResult = $creditStmt->get_result();
 $creditRow = $creditResult->fetch_assoc();
 $totalCredits = $creditRow['Total_Credits'] ? $creditRow['Total_Credits'] : 0;
 $creditStmt->close();
-
 ?>
 <!DOCTYPE html>
 <html>
@@ -60,16 +59,7 @@ $creditStmt->close();
         .main-content { width: 80%; float: right; padding: 40px; height: 100vh; overflow-y: auto; position: relative; }
         
         
-        .credits-box {
-            position: absolute;
-            top: 40px;
-            right: 40px;
-            background-color: #1a2a42;
-            border: 2px solid #4CAF50;
-            padding: 15px 25px;
-            border-radius: 12px;
-            text-align: right;
-        }
+        .credits-box { position: absolute; top: 40px; right: 40px; background-color: #1a2a42; border: 2px solid #4CAF50; padding: 15px 25px; border-radius: 12px; text-align: right; }
         .credits-box span { display: block; font-size: 14px; color: #a0aec0; margin-bottom: 5px; }
         .credits-box strong { font-size: 22px; color: #4CAF50; }
 
@@ -81,62 +71,29 @@ $creditStmt->close();
         .request-form { width: 100%; margin-top: 20px; } 
         .form-group { margin-bottom: 20px; }
         
-        .form-group label {
-            display: inline-block;
-            background-color: #e3d596; 
-            color: black;
-            padding: 5px 15px;
-            border-radius: 15px;
-            font-weight: bold;
-            font-size: 14px;
-            margin-bottom: 5px;
-        }
+        .form-group label { display: inline-block; background-color: #e3d596; color: black; padding: 5px 15px; border-radius: 15px; font-weight: bold; font-size: 14px; margin-bottom: 5px; }
         
        .form-group input[type="text"], 
         .form-group input[type="number"],
         .form-group select {
-            width: 100%;
-            padding: 15px;
-            border-radius: 20px;
-            border: none;
-            background-color: #cccccc; 
-            font-size: 16px;
-            color: #333333;
+            width: 100%; padding: 15px; border-radius: 20px; border: none; background-color: #cccccc; font-size: 16px; color: #333333;
         }
         
         .btn-container { text-align: left; margin-top: 30px; }
-        
-        .btn-clear, .btn-submit {
-            padding: 15px 30px;
-            border-radius: 20px;
-            border: none;
-            font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
-        }
+        .btn-clear, .btn-submit { padding: 15px 30px; border-radius: 20px; border: none; font-size: 16px; font-weight: bold; cursor: pointer; }
         .btn-clear { background-color: #666666; color: white; margin-right: 15px; }
         .btn-submit { background-color: #4CAF50; color: white; }
-        
         .btn-clear:hover { background-color: #4d4d4d; }
         .btn-submit:hover { background-color: #45a049; }
 
         
-        .car-card {
-            background-color: white;
-            color: black;
-            padding: 20px;
-            border-radius: 15px;
-            margin-bottom: 20px;
-            width: 100%;
-            box-sizing: border-box;
-        }
+        .car-card { background-color: white; color: black; padding: 20px; border-radius: 15px; margin-bottom: 20px; width: 100%; box-sizing: border-box; }
         .car-info h3 { margin-top: 0; font-size: 17px; margin-bottom: 8px; }
         .car-info p { color: #666666; margin-bottom: 15px; font-size: 14px; margin-top: 0; }
         
         .status-badge { color: white; padding: 5px 12px; border-radius: 20px; font-weight: bold; font-size: 12px; }
         .transaction-info { font-weight: bold; font-size: 14px; margin-left: 8px; }
         .date-text { font-size: 12px; color: #666666; font-weight: normal; display: block; margin-top: 5px;}
-        
         
         .action-btn { display: block; width: 100%; text-align: center; padding: 10px; border-radius: 10px; text-decoration: none; font-weight: bold; margin-top: 15px; font-size: 14px; }
     </style>
@@ -153,7 +110,6 @@ $creditStmt->close();
     </div>
 
     <div class="main-content">
-        
         
         <div class="credits-box">
             <span>Available Trade-in Credits</span>
@@ -254,7 +210,7 @@ $creditStmt->close();
                             
                             
                             if($status == 'Pending') {
-                                echo '<a href="cancel_trade_in.php?id=' . $req["Trade_Id"] . '" class="action-btn" style="background-color: #e3d596; color: black;">Cancel Request</a>';
+                                echo '<a href="cancel_trade.php?id=' . $req["Trade_Id"] . '" class="action-btn" style="background-color: #e3d596; color: black;">Cancel Request</a>';
                             } elseif ($status == 'Approved') {
                                 echo '<div class="action-btn" style="background-color: #c8e6c9; color: #256029;">Credits Added to Account</div>';
                             } else {
