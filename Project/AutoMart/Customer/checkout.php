@@ -6,19 +6,25 @@ if(!isset($_SESSION["email"]) || $_SESSION["role"] !== "Customer") {
     exit();
 }
 
+
+
 include '../db.php';
 
-// Ensure vehicle ID and price were passed
+
+
+
 if(!isset($_POST['vehicle_id']) || !isset($_POST['price'])) {
     header("Location: customer_dashboard.php");
     exit();
 }
 
+
+
 $vehicle_id = $_POST['vehicle_id'];
 $listed_price = $_POST['price'];
 $email = $_SESSION["email"];
 
-// Fetch Car Details for Display
+
 $carStmt = $conn->prepare("SELECT * FROM VEHICLE WHERE Vehicle_Id = ?");
 $carStmt->bind_param("i", $vehicle_id);
 $carStmt->execute();
@@ -26,7 +32,7 @@ $carResult = $carStmt->get_result();
 $car = $carResult->fetch_assoc();
 $carStmt->close();
 
-// Fetch Customer's Available Approved Trade-in Credits
+
 $creditStmt = $conn->prepare("SELECT SUM(Expected_Price) AS Total_Credits FROM TRADE_IN WHERE Customer_Email = ? AND Status = 'Approved'");
 $creditStmt->bind_param("s", $email);
 $creditStmt->execute();
@@ -35,7 +41,7 @@ $creditRow = $creditResult->fetch_assoc();
 $availableCredits = $creditRow['Total_Credits'] ? $creditRow['Total_Credits'] : 0;
 $creditStmt->close();
 
-// Calculate final total after applying credits (if user chooses to use them)
+
 $finalPrice = max(0, $listed_price - $availableCredits);
 ?>
 <!DOCTYPE html>
