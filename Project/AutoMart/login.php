@@ -115,6 +115,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
 
         
+        
         form input[type="text"]:focus, 
         form input[type="password"]:focus {
             border-color: #0a66c2;
