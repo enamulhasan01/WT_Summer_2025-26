@@ -8,15 +8,12 @@ if(!isset($_SESSION["email"]) || $_SESSION["role"] !== "Customer") {
 
 include '../db.php';
 
-
 if(!isset($_GET['id']) || empty($_GET['id'])) {
-    
     header("Location: customer_dashboard.php");
     exit();
 }
 
 $vehicle_id = $_GET['id'];
-
 
 $stmt = $conn->prepare("SELECT * FROM VEHICLE WHERE Vehicle_Id = ?");
 $stmt->bind_param("i", $vehicle_id);
@@ -39,13 +36,11 @@ $imagePath = !empty($car["Image"]) ? '../Assets/' . $car["Image"] : '../Assets/d
         * { box-sizing: border-box; font-family: Arial, sans-serif; }
         body { margin: 0; padding: 0; background-color: #0a192f; color: white; }
         
-        
         .sidebar { width: 20%; float: left; height: 100vh; background-color: #000000; padding: 20px; }
         .sidebar h2 { color: #ffffff; margin-bottom: 40px; text-align: center; }
         .sidebar a { display: block; color: white; padding: 15px; text-decoration: none; margin-bottom: 10px; border-radius: 8px; background-color: #1a1a1a; }
         .sidebar a.active, .sidebar a:hover { background-color: #0a66c2; }
         .sidebar a.logout { background-color: #cc0000; margin-top: 50px; }
-
         
         .main-content { width: 80%; float: left; padding: 40px; height: 100vh; overflow-y: auto; }
         
@@ -76,7 +71,7 @@ $imagePath = !empty($car["Image"]) ? '../Assets/' . $car["Image"] : '../Assets/d
         <h2>AutoMart</h2>
         <a href="customer_dashboard.php" class="active">Explore your next car</a>
         <a href="make_request.php">Make a Request</a>
-        <a href="trade_in.php">Trade-in/ Sell</a>
+        <a href="trade_in.php">Trade-in</a>
         <a href="order_status.php">Order Status</a>
         <a href="../logout.php" class="logout">Logout</a>
     </div>
@@ -103,13 +98,23 @@ $imagePath = !empty($car["Image"]) ? '../Assets/' . $car["Image"] : '../Assets/d
 
                 <?php if($car["Availability"] == 'Available'): ?>
                     
-                    <form action="process_purchase.php" method="POST">
+                    
+                    <form action="checkout.php" method="POST">
                         <input type="hidden" name="vehicle_id" value="<?php echo $car["Vehicle_Id"]; ?>">
                         <input type="hidden" name="price" value="<?php echo $car["Listed_Price"]; ?>">
                         <button type="submit" class="purchase-btn">Proceed to Purchase</button>
                     </form>
+                    
                 <?php else: ?>
-                    <button class="purchase-btn" style="background-color: #cccccc; cursor: not-allowed;" disabled>Currently Unavailable</button>
+                    <?php
+                    $requestUrl = "make_request.php" . 
+                                  "?make=" . urlencode($car["Make"]) . 
+                                  "&model=" . urlencode($car["Model"]) . 
+                                  "&year=" . urlencode($car["Year"]) . 
+                                  "&color=" . urlencode($car["Color"]) . 
+                                  "&price=" . urlencode($car["Listed_Price"]);
+                    ?>
+                    <a href="<?php echo $requestUrl; ?>" class="purchase-btn" style="background-color: #f1c40f; color: black; display: block; width: 100%; text-align: center; box-sizing: border-box;">Request This Car</a>
                 <?php endif; ?>
             </div>
         </div>
