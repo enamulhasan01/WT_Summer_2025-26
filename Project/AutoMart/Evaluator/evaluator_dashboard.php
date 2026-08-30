@@ -119,9 +119,9 @@ if ($selected_id) {
     <!-- Sidebar -->
     <div class="sidebar">
         <h2>AutoMart</h2>
-        <a href="evaluator_dashboard.php" class="nav-link active">Trade-In Queue</a>
-        <a href="supplier_qa_hub.php" class="nav-link">Supplier QA Hub</a>
-        <a href="#" class="nav-link">Repair Logs</a>
+        <a href="evaluator_dashboard.php" class="nav-link">Trade-In Queue</a>
+<a href="supplier_qa_hub.php" class="nav-link">Supplier QA Hub</a>
+<a href="repair_logs.php" class="nav-link">Repair Logs</a>
         
         <a href="../logout.php" class="btn-logout">Logout</a>
     </div>
