@@ -156,7 +156,7 @@ function getCarImage($imageName, $model) {
                             </div>
                         </div>
 
-                        <a href="#" class="btn-view-details <?php echo $isAvailable ? 'available-btn' : ''; ?>">View Details</a>
+                        <a href="car_details.php?id=<?php echo $row['Vehicle_Id']; ?>" class="btn-view-details <?php echo $isAvailable ? 'available-btn' : ''; ?>">View Details</a>
                     </div>
                 <?php endwhile; ?>
             <?php else: ?>
