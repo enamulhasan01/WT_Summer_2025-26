@@ -4,13 +4,17 @@ session_start();
 // Import shared database connection
 require_once '../db.php';
 
+// Retrieve supplier email from active session
+$supplier_email = $_SESSION['user_email'] ?? $_SESSION['email'] ?? 'Unknown Supplier';
+
 // Handle Status Updates
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['action'])) {
     $request_id = intval($_POST['request_id']);
     $status     = ($_POST['action'] === 'approve') ? 'Approved' : 'Rejected';
 
-    $stmt = $conn->prepare("UPDATE car_request SET Status = ? WHERE Request_Id = ?");
-    $stmt->bind_param("si", $status, $request_id);
+    // Update both status and the supplier who handled it
+    $stmt = $conn->prepare("UPDATE car_request SET Status = ?, Supplier_Email = ? WHERE Request_Id = ?");
+    $stmt->bind_param("ssi", $status, $supplier_email, $request_id);
     $stmt->execute();
     $stmt->close();
     
@@ -34,9 +38,14 @@ function getCarImage($model) {
         return '../Assets/bmw_m4.png';
     }
     
-    // Fallback for Audi M4 CS and any other unmapped cars
-    return '../Assets/default_car.png';
-}
+        return '../Assets/default_car.png'; }
+   
+$stmt_count = $conn->prepare("SELECT COUNT(*) AS total_approved FROM car_request WHERE Supplier_Email = ? AND Status = 'Approved'");
+$stmt_count->bind_param("s", $supplier_email);
+$stmt_count->execute();
+$count_result = $stmt_count->get_result()->fetch_assoc();
+$total_approved = $count_result['total_approved'];
+$stmt_count->close();
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -100,6 +109,12 @@ function getCarImage($model) {
     <h2>AutoMart</h2>
     <a href="supplier_demands.php" class="nav-link active">Customer Demands</a>
     <a href="#" class="nav-link">All Proposed Vehicles</a>
+    
+    <!-- Display Total Approvals -->
+    <div style="padding: 12px 16px; color: #8B949E; font-size: 14px;">
+        Approved Demands: <strong style="color: #4ADE80;"><?php echo $total_approved; ?></strong>
+    </div>
+
     <a href="logout.php" class="btn-logout">Logout</a>
 </div>
 
