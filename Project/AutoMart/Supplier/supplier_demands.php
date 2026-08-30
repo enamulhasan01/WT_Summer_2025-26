@@ -108,7 +108,7 @@ $stmt_count->close();
   <div class="sidebar">
     <h2>AutoMart</h2>
     <a href="supplier_demands.php" class="nav-link active">Customer Demands</a>
-    <a href="propose_vehicle.php" class="nav-link">All Proposed Vehicles</a>
+    <a href="submit_proposal.php" class="nav-link">Proposal Submission</a>
     
     <!-- Display Total Approvals -->
     <div style="padding: 12px 16px; color: #8B949E; font-size: 14px;">

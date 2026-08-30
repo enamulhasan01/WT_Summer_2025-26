@@ -115,7 +115,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 <div class="alert alert-<?php echo $status_type; ?>"><?php echo $message; ?></div>
             <?php endif; ?>
 
-            <form method="POST" action="propose_vehicle.php">
+            <form method="POST" action="submit_proposal.php">
                 <div class="form-group">
                     <span class="label-pill">Car Make</span>
                     <input type="text" name="make" class="input-field" placeholder="e.g. BMW" required>
