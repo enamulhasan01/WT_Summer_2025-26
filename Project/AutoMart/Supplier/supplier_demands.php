@@ -96,12 +96,12 @@ function getCarImage($model) {
 </head>
 <body>
 
-    <div class="sidebar">
-        <h2>AutoMart</h2>
-        <a href="#" class="nav-link active">Customer Demands</a>
-        <a href="#" class="nav-link">All Proposed Vehicles</a>
-        <a href="logout.php" class="btn-logout">Logout</a>
-    </div>
+  <div class="sidebar">
+    <h2>AutoMart</h2>
+    <a href="supplier_demands.php" class="nav-link active">Customer Demands</a>
+    <a href="#" class="nav-link">All Proposed Vehicles</a>
+    <a href="logout.php" class="btn-logout">Logout</a>
+</div>
 
     <div class="main-content">
         <h1 class="page-title">Customer Demands :-</h1>
