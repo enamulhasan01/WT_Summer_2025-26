@@ -26,16 +26,15 @@ $result = $conn->query($sql);
 function getCarImage($model) {
     $modelLower = strtolower($model);
     
-    if (strpos($modelLower, 'audi') !== false) {
-        return '../Assets/audi.png'; // Make sure audi.png exists in Assets/
-    } elseif (strpos($modelLower, 'civic') !== false) {
+    if (strpos($modelLower, 'civic') !== false) {
         return '../Assets/honda_civic.png';
     } elseif (strpos($modelLower, 'rav4') !== false) {
         return '../Assets/toyota_rav4.png';
-    } elseif (strpos($modelLower, 'm4') !== false) {
+    } elseif (strpos($modelLower, 'bmw') !== false) {
         return '../Assets/bmw_m4.png';
     }
     
+    // Fallback for Audi M4 CS and any other unmapped cars
     return '../Assets/default_car.png';
 }
 ?>
