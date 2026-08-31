@@ -80,7 +80,7 @@ function getCarImage($imageName, $model) {
         .car-title { font-size: 28px; font-weight: 800; color: #0F172A; }
         .car-price { font-size: 26px; font-weight: 800; color: #16A34A; margin-bottom: 8px; }
 
-        /* Spec List Box */
+    
         .spec-box { background-color: #F1F5F9; border-radius: 12px; padding: 20px; display: flex; flex-direction: column; gap: 12px; }
         .spec-item { font-size: 15px; color: #334155; }
         .spec-item strong { color: #0F172A; display: inline-block; width: 120px; }
