@@ -86,7 +86,6 @@ if ($selected_id) {
         .status-rejected { background-color: rgba(239, 68, 68, 0.15); color: #F87171; }
         .status-pending { background-color: rgba(234, 179, 8, 0.15); color: #FACC15; }
 
-        
         .inspection-card { background-color: #FFFFFF; color: #0F172A; border-radius: 20px; padding: 32px; display: flex; gap: 40px; }
         
         .grading-section { flex: 1.2; display: flex; flex-direction: column; gap: 20px; border-right: 1px solid #E2E8F0; padding-right: 32px; }
@@ -109,7 +108,6 @@ if ($selected_id) {
 </head>
 <body>
 
-    <!-- Sidebar -->
     <div class="sidebar">
         <h2>AutoMart</h2>
         <a href="evaluator_dashboard.php" class="nav-link">Trade-In Queue</a>
@@ -119,11 +117,10 @@ if ($selected_id) {
         <a href="../logout.php" class="btn-logout">Logout</a>
     </div>
 
-    <!-- Main Content Area -->
     <div class="main-content">
         <div class="page-header">Trade in Evaluation</div>
 
-        <!-- Trade-in Queue Table -->
+        
         <div class="table-card">
             <table>
                 <thead>
@@ -163,13 +160,12 @@ if ($selected_id) {
             </table>
         </div>
 
-        <!-- Inspector Evaluation Form Card -->
+
         <?php if ($selected_car): ?>
         <form method="POST" action="evaluator_dashboard.php">
             <input type="hidden" name="trade_id" value="<?php echo $selected_car['Trade_Id']; ?>">
             
             <div class="inspection-card">
-                <!-- Left: Condition Grading -->
                 <div class="grading-section">
                     <h3>Condition Grading</h3>
                     
@@ -189,7 +185,6 @@ if ($selected_id) {
                     </div>
                 </div>
 
-                <!-- Right: Car Details & Decisions -->
                 <div class="details-section">
                     <div>
                         <h2 class="car-heading"><?php echo htmlspecialchars($selected_car['Year'] . ' ' . $selected_car['Car_Make'] . ' ' . $selected_car['Car_Model']); ?></h2>
