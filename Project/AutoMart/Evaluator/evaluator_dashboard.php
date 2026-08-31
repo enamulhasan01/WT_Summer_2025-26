@@ -2,13 +2,11 @@
 session_start();
 require_once '../db.php';
 
-// Auth Guard: Ensure only logged in Evaluators can access
 if (!isset($_SESSION["email"]) || $_SESSION["role"] !== "Evaluator") {
     header("Location: ../login.php");
     exit();
 }
 
-// Handle Accept/Reject Actions
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
     $trade_id = intval($_POST['trade_id']);
     $action = $_POST['action'];
@@ -18,7 +16,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
     
     $status = ($action === 'accept') ? 'Approved' : 'Rejected';
 
-    // Update trade_in table status and grades
     $stmt_update = $conn->prepare("UPDATE trade_in SET Status = ?, Engine_Health = ?, Exterior_Condition = ?, Interior_Quality = ? WHERE Trade_Id = ?");
     $stmt_update->bind_param("siiii", $status, $engine, $exterior, $interior, $trade_id);
     $stmt_update->execute();
