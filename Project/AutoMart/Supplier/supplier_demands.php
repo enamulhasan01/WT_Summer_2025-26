@@ -8,7 +8,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['action'])) {
     $request_id = intval($_POST['request_id']);
     $status     = ($_POST['action'] === 'approve') ? 'Approved' : 'Rejected';
 
-    // Update both status and the supplier who handled it
+  
     $stmt = $conn->prepare("UPDATE car_request SET Status = ?, Supplier_Email = ? WHERE Request_Id = ?");
     $stmt->bind_param("ssi", $status, $supplier_email, $request_id);
     $stmt->execute();
@@ -18,11 +18,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['action'])) {
     exit();
 }
 
-// Fetch all customer requests
 $sql    = "SELECT * FROM car_request ORDER BY Request_Id DESC";
 $result = $conn->query($sql);
 
-// Helper function to map model names to relative asset images
 function getCarImage($model) {
     $modelLower = strtolower($model);
     
@@ -52,7 +50,6 @@ $stmt_count->close();
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
         body { display: flex; background-color: #0D1117; color: #FFFFFF; min-height: 100vh; }
 
-        /* AutoMart Sidebar */
         .sidebar { width: 260px; background-color: #0F1216; padding: 24px 16px; display: flex; flex-direction: column; }
         .sidebar h2 { font-size: 24px; font-weight: bold; margin-bottom: 32px; padding-left: 8px; }
         .nav-link { display: block; padding: 12px 16px; margin-bottom: 8px; border-radius: 8px; color: #8B949E; text-decoration: none; font-size: 15px; font-weight: 500; }
@@ -60,7 +57,6 @@ $stmt_count->close();
         .nav-link:hover:not(.active) { background-color: #161B22; color: #FFFFFF; }
         .btn-logout { margin-top: auto; background-color: #DC2626; color: white; padding: 12px; border-radius: 8px; border: none; text-align: center; text-decoration: none; font-weight: bold; display: block; }
 
-        /* Main Dashboard Content */
         .main-content { flex: 1; padding: 32px; overflow-y: auto; }
         .page-title { font-size: 24px; font-weight: bold; margin-bottom: 24px; }
 
