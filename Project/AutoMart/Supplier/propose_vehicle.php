@@ -5,10 +5,9 @@ ini_set('display_errors', 1);
 session_start();
 require_once '../db.php';
 
-// Retrieve supplier email for sidebar approved demands counter
 $supplier_email = $_SESSION['email'] ?? $_SESSION['user_email'] ?? $_SESSION['user'] ?? '';
 
-// Count approved demands
+
 $total_approved = 0;
 if (!empty($supplier_email)) {
     $stmt_count = $conn->prepare("SELECT COUNT(*) AS total_approved FROM car_request WHERE Supplier_Email = ? AND Status = 'Approved'");
@@ -19,7 +18,7 @@ if (!empty($supplier_email)) {
     $stmt_count->close();
 }
 
-// Handle Search Query
+
 $search = isset($_GET['search']) ? trim($_GET['search']) : '';
 if (!empty($search)) {
     $stmt = $conn->prepare("SELECT * FROM vehicle WHERE Make LIKE ? OR Model LIKE ? ORDER BY Vehicle_Id DESC");
@@ -31,7 +30,7 @@ if (!empty($search)) {
     $result = $conn->query("SELECT * FROM vehicle ORDER BY Vehicle_Id DESC");
 }
 
-// Helper function to resolve car image path
+
 function getCarImage($imageName, $model) {
     if (!empty($imageName) && file_exists("../Assets/" . $imageName)) {
         return "../Assets/" . $imageName;
@@ -58,7 +57,7 @@ function getCarImage($imageName, $model) {
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
         body { display: flex; background-color: #0B1622; color: #FFFFFF; min-height: 100vh; }
 
-        /* Sidebar Styling */
+        
         .sidebar { width: 260px; background-color: #0F1216; padding: 24px 16px; display: flex; flex-direction: column; flex-shrink: 0; }
         .sidebar h2 { font-size: 24px; font-weight: bold; margin-bottom: 32px; padding-left: 8px; color: #FFFFFF; }
         .nav-link { display: block; padding: 12px 16px; margin-bottom: 8px; border-radius: 8px; color: #8B949E; text-decoration: none; font-size: 15px; font-weight: 500; }
@@ -66,10 +65,7 @@ function getCarImage($imageName, $model) {
         .nav-link:hover:not(.active) { background-color: #161B22; color: #FFFFFF; }
         .btn-logout { margin-top: auto; background-color: #DC2626; color: white; padding: 12px; border-radius: 8px; border: none; text-align: center; text-decoration: none; font-weight: bold; display: block; }
 
-        /* Main Content */
         .main-content { flex: 1; padding: 32px 40px; overflow-y: auto; }
-
-        /* Top Bar */
         .top-bar { display: flex; gap: 16px; align-items: center; margin-bottom: 32px; }
         .search-form { display: flex; flex: 1; gap: 12px; }
         .search-input { flex: 1; background-color: #FFFFFF; color: #1E1E1E; border: none; border-radius: 24px; padding: 14px 24px; font-size: 15px; outline: none; }
@@ -78,7 +74,7 @@ function getCarImage($imageName, $model) {
         .btn-propose { background-color: #0066FF; color: white; text-decoration: none; border-radius: 24px; padding: 14px 24px; font-size: 15px; font-weight: bold; white-space: nowrap; }
         .btn-propose:hover { opacity: 0.9; }
 
-        /* Grid Cards Layout */
+        
         .vehicle-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px; }
         .car-card { background-color: #FFFFFF; color: #0F172A; border-radius: 16px; padding: 20px; display: flex; flex-direction: column; justify-content: space-between; }
         .card-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px; }
@@ -98,7 +94,7 @@ function getCarImage($imageName, $model) {
 </head>
 <body>
 
-    <!-- Sidebar -->
+   
     <div class="sidebar">
         <h2>AutoMart</h2>
         <a href="supplier_demands.php" class="nav-link">Customer Demands</a>
@@ -112,9 +108,9 @@ function getCarImage($imageName, $model) {
         <a href="logout.php" class="btn-logout">Logout</a>
     </div>
 
-    <!-- Main Content -->
+    
     <div class="main-content">
-        <!-- Search and Action Bar -->
+        
         <div class="top-bar">
             <form method="GET" action="propose_vehicle.php" class="search-form">
                 <input type="text" name="search" class="search-input" placeholder="Search by Make or Model..." value="<?php echo htmlspecialchars($search); ?>">
@@ -123,7 +119,7 @@ function getCarImage($imageName, $model) {
             <a href="submit_proposal.php" class="btn-propose">+ Proposal Submission</a>
         </div>
 
-        <!-- Vehicle Grid -->
+      
         <div class="vehicle-grid">
             <?php if ($result && $result->num_rows > 0): ?>
                 <?php while ($row = $result->fetch_assoc()): ?>
