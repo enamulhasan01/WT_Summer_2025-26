@@ -2,12 +2,10 @@
 session_start();
 require_once '../db.php';
 
-// Self-healing database check for repair and availability columns
 try { $conn->query("ALTER TABLE vehicle ADD COLUMN QA_Status VARCHAR(50) DEFAULT 'Needs Repair'"); } catch (Exception $e) {}
 try { $conn->query("ALTER TABLE vehicle ADD COLUMN Repair_Notes TEXT DEFAULT ''"); } catch (Exception $e) {}
 try { $conn->query("ALTER TABLE vehicle ADD COLUMN Repair_Cost DECIMAL(10,2) DEFAULT 0.00"); } catch (Exception $e) {}
 
-// Handle Form Submission for Logging Repairs
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'save_repair') {
     $vehicle_id = intval($_POST['vehicle_id']);
     $service_desc = trim($_POST['service_description']);
@@ -24,7 +22,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
     exit();
 }
 
-// Fetch vehicles that need repair (catching any variation like Needs Repair, Poor Condition, etc.)
 $result = $conn->query("SELECT * FROM vehicle WHERE QA_Status LIKE '%Repair%' OR QA_Status LIKE '%Poor%' OR QA_Status LIKE '%Needs%' OR QA_Status = 'Pending Repair' OR (Condition_Status = 'Poor' AND QA_Status = 'awaiting clearance') ORDER BY Vehicle_Id DESC");
 
 $selected_id = $_GET['selected'] ?? null;
