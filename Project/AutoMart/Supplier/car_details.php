@@ -5,10 +5,9 @@ ini_set('display_errors', 1);
 session_start();
 require_once '../db.php';
 
-// Retrieve supplier email for sidebar approved demands counter
 $supplier_email = $_SESSION['email'] ?? $_SESSION['user_email'] ?? $_SESSION['user'] ?? '';
 
-// Count approved demands
+
 $total_approved = 0;
 if (!empty($supplier_email)) {
     $stmt_count = $conn->prepare("SELECT COUNT(*) AS total_approved FROM car_request WHERE Supplier_Email = ? AND Status = 'Approved'");
@@ -19,7 +18,7 @@ if (!empty($supplier_email)) {
     $stmt_count->close();
 }
 
-// Get Vehicle ID from URL query string
+
 $vehicle_id = isset($_GET['id']) ? intval($_GET['id']) : 0;
 $car = null;
 
@@ -34,7 +33,7 @@ if ($vehicle_id > 0) {
     $stmt->close();
 }
 
-// Fallback image helper
+
 function getCarImage($imageName, $model) {
     if (!empty($imageName) && file_exists("../Assets/" . $imageName)) {
         return "../Assets/" . $imageName;
@@ -59,7 +58,7 @@ function getCarImage($imageName, $model) {
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
         body { display: flex; background-color: #0B1622; color: #FFFFFF; min-height: 100vh; }
 
-        /* Sidebar Styling */
+      
         .sidebar { width: 260px; background-color: #0F1216; padding: 24px 16px; display: flex; flex-direction: column; flex-shrink: 0; }
         .sidebar h2 { font-size: 24px; font-weight: bold; margin-bottom: 32px; padding-left: 8px; color: #FFFFFF; }
         .nav-link { display: block; padding: 12px 16px; margin-bottom: 8px; border-radius: 8px; color: #8B949E; text-decoration: none; font-size: 15px; font-weight: 500; }
@@ -67,13 +66,12 @@ function getCarImage($imageName, $model) {
         .nav-link:hover:not(.active) { background-color: #161B22; color: #FFFFFF; }
         .btn-logout { margin-top: auto; background-color: #DC2626; color: white; padding: 12px; border-radius: 8px; border: none; text-align: center; text-decoration: none; font-weight: bold; display: block; }
 
-        /* Main Area */
         .main-content { flex: 1; padding: 40px; overflow-y: auto; }
 
         .back-link { display: inline-block; color: #3B82F6; text-decoration: none; font-size: 15px; font-weight: 600; margin-bottom: 24px; }
         .back-link:hover { text-decoration: underline; }
 
-        /* Details Card Container */
+        
         .details-card { background-color: #FFFFFF; color: #0F172A; border-radius: 20px; padding: 32px; display: flex; gap: 40px; align-items: flex-start; max-width: 950px; }
         .details-image-container { flex: 1; display: flex; align-items: center; justify-content: center; background-color: #F8FAFC; border-radius: 16px; padding: 20px; min-height: 320px; }
         .details-image-container img { max-width: 100%; max-height: 300px; object-fit: contain; }
@@ -92,7 +90,7 @@ function getCarImage($imageName, $model) {
 </head>
 <body>
 
-    <!-- Sidebar -->
+  
     <div class="sidebar">
         <h2>AutoMart</h2>
         <a href="supplier_demands.php" class="nav-link">Customer Demands</a>
@@ -106,7 +104,7 @@ function getCarImage($imageName, $model) {
         <a href="logout.php" class="btn-logout">Logout</a>
     </div>
 
-    <!-- Main Content -->
+   
     <div class="main-content">
         <a href="propose_vehicle.php" class="back-link">&larr; Back to All Proposed Vehicles</a>
 
