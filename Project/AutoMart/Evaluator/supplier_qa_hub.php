@@ -166,13 +166,13 @@ if ($selected_id) {
             <?php endif; ?>
         </div>
 
-        <!-- Detailed Inspection & Certification Panel -->
+      
         <?php if ($selected_car): ?>
         <form method="POST" action="supplier_qa_hub.php">
             <input type="hidden" name="vehicle_id" value="<?php echo $selected_car['Vehicle_Id']; ?>">
             
             <div class="inspection-grid">
-                <!-- Paper Trail Section -->
+               
                 <div class="section-card">
                     <h3>Paper trail</h3>
                     <div class="sub-text"><?php echo htmlspecialchars($selected_car['Make'] . ' ' . $selected_car['Model']); ?></div>
@@ -202,7 +202,6 @@ if ($selected_id) {
                     </div>
                 </div>
 
-                <!-- Mechanical Checklist Section -->
                 <div class="section-card">
                     <h3>Mechanical checklist</h3>
                     <div class="sub-text">Verification Items</div>
@@ -228,7 +227,6 @@ if ($selected_id) {
                 </div>
             </div>
 
-            <!-- Action Buttons -->
             <div class="action-bar">
                 <button type="submit" name="action" value="certify" class="btn-certify">Certify for active inventory</button>
                 <button type="submit" name="action" value="reject" class="btn-reject-supplier">Reject and return to supplier</button>
