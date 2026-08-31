@@ -107,7 +107,6 @@ if ($selected_id) {
 </head>
 <body>
 
-    <!-- Sidebar Navigation -->
     <div class="sidebar">
         <h2>AutoMart</h2>
         <a href="evaluator_dashboard.php" class="nav-link">Trade-In Queue</a>
@@ -117,11 +116,10 @@ if ($selected_id) {
         <a href="../logout.php" class="btn-logout">Logout</a>
     </div>
 
-    <!-- Main Workspace -->
     <div class="main-content">
         <div class="page-header">REPAIR LOG</div>
 
-        <!-- Repair Cards Queue Row -->
+       
         <div class="repair-cards-row">
             <?php if ($result && $result->num_rows > 0): ?>
                 <?php while ($row = $result->fetch_assoc()): ?>
@@ -138,9 +136,8 @@ if ($selected_id) {
         </div>
 
         <?php if ($selected_car): ?>
-        <!-- Log Repair Workspace -->
+        
         <div class="log-workspace">
-            <!-- Form Card -->
             <form method="POST" action="repair_logs.php" class="form-card">
                 <input type="hidden" name="action" value="save_repair">
                 <input type="hidden" name="vehicle_id" value="<?php echo $selected_car['Vehicle_Id']; ?>">
