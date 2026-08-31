@@ -48,7 +48,7 @@ if ($selected_id) {
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
         body { display: flex; background: linear-gradient(135deg, #070D14 0%, #0B1622 100%); color: #FFFFFF; min-height: 100vh; }
 
-        /* Sidebar Navigation */
+      
         .sidebar { width: 260px; background-color: #0F1216; padding: 24px 16px; display: flex; flex-direction: column; flex-shrink: 0; border-right: 1px solid #1F2937; }
         .sidebar h2 { font-size: 24px; font-weight: bold; margin-bottom: 32px; padding-left: 8px; color: #FFFFFF; }
         .nav-link { display: block; padding: 12px 16px; margin-bottom: 8px; border-radius: 8px; color: #8B949E; text-decoration: none; font-size: 15px; font-weight: 500; }
@@ -56,11 +56,11 @@ if ($selected_id) {
         .nav-link:hover:not(.active) { background-color: #161B22; color: #FFFFFF; }
         .btn-logout { margin-top: auto; background-color: #DC2626; color: white; padding: 12px; border-radius: 8px; border: none; text-align: center; text-decoration: none; font-weight: bold; display: block; }
 
-        /* Main Workspace */
+       
         .main-content { flex: 1; padding: 32px; overflow-y: auto; display: flex; flex-direction: column; gap: 24px; }
         .page-header { background-color: #161B22; padding: 12px 24px; border-radius: 12px; width: fit-content; font-size: 16px; font-weight: 700; color: #FFFFFF; border: 1px solid #21262D; letter-spacing: 1px; }
 
-        /* Cards Row for Cars Needing Repair */
+        
         .repair-cards-row { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; }
         .repair-card { background-color: #111822; border: 1px solid #1F2937; border-radius: 12px; padding: 20px; cursor: pointer; transition: all 0.2s ease; position: relative; }
         .repair-card:hover { border-color: #3B82F6; transform: translateY(-2px); }
@@ -70,7 +70,6 @@ if ($selected_id) {
         .car-title-sm { font-size: 16px; font-weight: 700; color: #FFFFFF; margin-bottom: 6px; }
         .car-desc-sm { font-size: 13px; color: #9CA3AF; line-height: 1.4; }
 
-        /* Log Repair Form & Panel Grid */
         .log-workspace { display: grid; grid-template-columns: 2fr 1fr; gap: 24px; }
         .form-card { background-color: #111822; border: 1px solid #1F2937; border-radius: 16px; padding: 28px; display: flex; flex-direction: column; gap: 20px; }
         .form-title { font-size: 18px; font-weight: 700; color: #FFFFFF; border-bottom: 1px solid #1F2937; padding-bottom: 12px; }
@@ -89,7 +88,7 @@ if ($selected_id) {
         .btn-save { background-color: #F59E0B; color: #000000; border: none; padding: 12px 24px; border-radius: 8px; font-weight: 700; cursor: pointer; flex: 1; }
         .btn-save:hover { background-color: #D97706; }
 
-        /* What Happens on Save Sidebar Box */
+    
         .info-panel { background-color: #111822; border: 1px solid #1F2937; border-radius: 16px; padding: 24px; display: flex; flex-direction: column; gap: 16px; height: fit-content; }
         .info-panel h4 { font-size: 15px; font-weight: 700; color: #FFFFFF; margin-bottom: 4px; }
         .info-step { display: flex; gap: 12px; align-items: flex-start; }
