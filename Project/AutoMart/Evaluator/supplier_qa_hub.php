@@ -2,10 +2,8 @@
 session_start();
 require_once '../db.php';
 
-// Enable error reporting to prevent silent white screens during development
 mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
 
-// Self-healing check: Ensure expected columns exist in the vehicle table
 try {
     $conn->query("ALTER TABLE vehicle ADD COLUMN QA_Status VARCHAR(50) DEFAULT 'awaiting clearance'");
 } catch (Exception $e) {}
@@ -14,13 +12,11 @@ try {
     $conn->query("ALTER TABLE vehicle ADD COLUMN Supplier_Name VARCHAR(100) DEFAULT 'Direct Supplier'");
 } catch (Exception $e) {}
 
-// Auth Guard (commented out if test session isn't set, uncomment when fully logged in)
+
 if (isset($_SESSION["role"]) && $_SESSION["role"] !== "Evaluator") {
     header("Location: ../login.php");
     exit();
 }
-
-// Handle QA Certification / Rejection Actions
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
     $vehicle_id = intval($_POST['vehicle_id']);
     $action = $_POST['action'];
@@ -34,13 +30,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
     }
 
     try {
-        // Update both QA_Status and Availability columns
+        
         $stmt = $conn->prepare("UPDATE vehicle SET QA_Status = ?, Availability = ? WHERE Vehicle_Id = ?");
         $stmt->bind_param("ssi", $qa_status, $availability, $vehicle_id);
         $stmt->execute();
         $stmt->close();
     } catch (Exception $e) {
-        // Fallback: update only QA_Status if Availability column structure differs
+        
         $stmt = $conn->prepare("UPDATE vehicle SET QA_Status = ? WHERE Vehicle_Id = ?");
         $stmt->bind_param("si", $qa_status, $vehicle_id);
         $stmt->execute();
@@ -51,10 +47,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
     exit();
 }
 
-// Fetch vehicles submitted by suppliers
+
 $result = $conn->query("SELECT * FROM vehicle ORDER BY Vehicle_Id DESC");
 
-// Determine selected vehicle for QA inspection
+
 $selected_id = $_GET['selected'] ?? null;
 $selected_car = null;
 
