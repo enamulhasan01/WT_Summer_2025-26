@@ -60,7 +60,7 @@ if ($selected_id) {
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
         body { display: flex; background-color: #0B1622; color: #FFFFFF; min-height: 100vh; }
 
-        /* Left Navigation Bar */
+       
         .sidebar { width: 260px; background-color: #0F1216; padding: 24px 16px; display: flex; flex-direction: column; flex-shrink: 0; }
         .sidebar h2 { font-size: 24px; font-weight: bold; margin-bottom: 32px; padding-left: 8px; color: #FFFFFF; }
         .nav-link { display: block; padding: 12px 16px; margin-bottom: 8px; border-radius: 8px; color: #8B949E; text-decoration: none; font-size: 15px; font-weight: 500; }
@@ -68,11 +68,11 @@ if ($selected_id) {
         .nav-link:hover:not(.active) { background-color: #161B22; color: #FFFFFF; }
         .btn-logout { margin-top: auto; background-color: #DC2626; color: white; padding: 12px; border-radius: 8px; border: none; text-align: center; text-decoration: none; font-weight: bold; display: block; }
 
-        /* Main Workspace */
+       
         .main-content { flex: 1; padding: 40px; overflow-y: auto; display: flex; flex-direction: column; gap: 24px; }
         .page-header { background-color: #161B22; padding: 12px 24px; border-radius: 12px; width: fit-content; font-size: 16px; font-weight: 700; color: #FFFFFF; border: 1px solid #21262D; }
 
-        /* Data Table Container */
+       
         .table-card { background-color: #161B22; border: 1px solid #21262D; border-radius: 16px; overflow: hidden; }
         table { width: 100%; border-collapse: collapse; text-align: left; }
         th { background-color: #0F1216; padding: 16px 20px; font-size: 14px; color: #8B949E; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
@@ -80,13 +80,13 @@ if ($selected_id) {
         tr.active-row { background-color: #1C2128; }
         tr:hover { background-color: #1F242C; cursor: pointer; }
 
-        /* Status Pills */
+       
         .status-badge { display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 13px; font-weight: 700; }
         .status-approved { background-color: rgba(34, 197, 94, 0.15); color: #4ADE80; }
         .status-rejected { background-color: rgba(239, 68, 68, 0.15); color: #F87171; }
         .status-pending { background-color: rgba(234, 179, 8, 0.15); color: #FACC15; }
 
-        /* Inspector Panel (Light Card integrated with AutoMart details theme) */
+        
         .inspection-card { background-color: #FFFFFF; color: #0F172A; border-radius: 20px; padding: 32px; display: flex; gap: 40px; }
         
         .grading-section { flex: 1.2; display: flex; flex-direction: column; gap: 20px; border-right: 1px solid #E2E8F0; padding-right: 32px; }
