@@ -60,7 +60,7 @@ $stmt_count->close();
         .main-content { flex: 1; padding: 32px; overflow-y: auto; }
         .page-title { font-size: 24px; font-weight: bold; margin-bottom: 24px; }
 
-        /* Card Layout matching Figma */
+    
         .cards-container { display: flex; flex-direction: column; gap: 20px; }
         .card { 
             background-color: #E2E8F0; 
@@ -78,13 +78,13 @@ $stmt_count->close();
         .card-title { font-size: 22px; font-weight: 800; margin-bottom: 6px; color: #0F1216; }
         .card-meta { font-size: 15px; color: #1F2937; margin-bottom: 12px; font-weight: 600; }
 
-        /* Dynamic Status Badges */
+      
         .badge { display: inline-block; padding: 6px 12px; border-radius: 12px; font-size: 12px; font-weight: bold; }
         .badge-Pending { background-color: #FEF08A; color: #854D0E; }
         .badge-Approved { background-color: #DCFCE7; color: #166534; }
         .badge-Rejected, .badge-Cancelled { background-color: #FEE2E2; color: #991B1B; }
 
-        /* Card Right Area (Action Buttons + Car Thumbnail) */
+      
         .card-right { display: flex; align-items: center; gap: 24px; }
         .car-img { width: 220px; height: 110px; object-fit: contain; }
 
@@ -146,7 +146,7 @@ $stmt_count->close();
                                     </span>
                                 <?php endif; ?>
                             </div>
-                            <!-- Image aligned to right side of card -->
+                           
                             <img src="<?php echo getCarImage($row['Car_Model']); ?>" alt="<?php echo htmlspecialchars($row['Car_Model']); ?>" class="car-img" onerror="this.style.display='none'">
                         </div>
                     </div>
