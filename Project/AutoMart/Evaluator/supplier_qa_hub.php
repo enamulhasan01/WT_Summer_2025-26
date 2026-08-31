@@ -106,7 +106,7 @@ if ($selected_id) {
         .section-card h3 { font-size: 17px; font-weight: 800; color: #0F172A; margin-bottom: 4px; }
         .sub-text { font-size: 13px; color: #64748B; margin-bottom: 20px; }
 
-        /* Paper Trail Items */
+     
         .doc-item { background-color: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 10px; padding: 14px 16px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
         .doc-name { font-weight: 700; font-size: 14px; color: #0F172A; }
         .doc-sub { font-size: 12px; color: #64748B; }
@@ -114,11 +114,11 @@ if ($selected_id) {
         .tag-verified { background-color: #DCFCE7; color: #15803D; }
         .tag-pending { background-color: #FEF3C7; color: #B45309; }
 
-        /* Mechanical Checklist Items */
+       
         .check-item { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; font-size: 14px; color: #334155; font-weight: 600; }
         .check-item input { width: 18px; height: 18px; accent-color: #0066FF; cursor: pointer; }
 
-        /* Action Footer */
+       
         .action-bar { display: flex; gap: 16px; justify-content: flex-end; margin-top: 8px; }
         .btn-certify { background-color: #22C55E; color: white; border: none; padding: 14px 28px; border-radius: 10px; font-weight: 700; font-size: 15px; cursor: pointer; }
         .btn-certify:hover { background-color: #16A34A; }
@@ -128,7 +128,7 @@ if ($selected_id) {
 </head>
 <body>
 
-    <!-- Sidebar -->
+  
     <div class="sidebar">
         <h2>AutoMart</h2>
         <a href="evaluator_dashboard.php" class="nav-link">Trade-In Queue</a>
@@ -138,11 +138,11 @@ if ($selected_id) {
         <a href="../logout.php" class="btn-logout">Logout</a>
     </div>
 
-    <!-- Main Content Area -->
+   
     <div class="main-content">
         <div class="page-header">Supplier Q&A Certification</div>
 
-        <!-- Supplier Vehicle Queue -->
+        
         <div class="queue-container">
             <?php if ($result && $result->num_rows > 0): ?>
                 <?php while ($row = $result->fetch_assoc()): ?>
