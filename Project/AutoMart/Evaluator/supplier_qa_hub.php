@@ -75,7 +75,7 @@ if ($selected_id) {
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
         body { display: flex; background-color: #0B1622; color: #FFFFFF; min-height: 100vh; }
 
-        /* Left Navigation Bar */
+        
         .sidebar { width: 260px; background-color: #0F1216; padding: 24px 16px; display: flex; flex-direction: column; flex-shrink: 0; }
         .sidebar h2 { font-size: 24px; font-weight: bold; margin-bottom: 32px; padding-left: 8px; color: #FFFFFF; }
         .nav-link { display: block; padding: 12px 16px; margin-bottom: 8px; border-radius: 8px; color: #8B949E; text-decoration: none; font-size: 15px; font-weight: 500; }
@@ -83,11 +83,11 @@ if ($selected_id) {
         .nav-link:hover:not(.active) { background-color: #161B22; color: #FFFFFF; }
         .btn-logout { margin-top: auto; background-color: #DC2626; color: white; padding: 12px; border-radius: 8px; border: none; text-align: center; text-decoration: none; font-weight: bold; display: block; }
 
-        /* Main Workspace */
+     
         .main-content { flex: 1; padding: 40px; overflow-y: auto; display: flex; flex-direction: column; gap: 24px; }
         .page-header { background-color: #161B22; padding: 12px 24px; border-radius: 12px; width: fit-content; font-size: 16px; font-weight: 700; color: #FFFFFF; border: 1px solid #21262D; }
 
-        /* Supplier Cards Queue */
+     
         .queue-container { display: flex; flex-direction: column; gap: 12px; }
         .qa-card { background-color: #161B22; border: 1px solid #21262D; border-radius: 12px; padding: 18px 24px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; transition: background 0.2s; }
         .qa-card:hover { background-color: #1F242C; }
@@ -100,7 +100,7 @@ if ($selected_id) {
         .status-cleared { background-color: rgba(34, 197, 94, 0.15); color: #4ADE80; }
         .status-rejected { background-color: rgba(239, 68, 68, 0.15); color: #F87171; }
 
-        /* Detail Panel Layout */
+       
         .inspection-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-top: 8px; }
         .section-card { background-color: #FFFFFF; color: #0F172A; border-radius: 16px; padding: 24px; }
         .section-card h3 { font-size: 17px; font-weight: 800; color: #0F172A; margin-bottom: 4px; }
