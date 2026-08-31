@@ -1,13 +1,9 @@
 <?php
 session_start();
-
-// Import shared database connection
 require_once '../db.php';
 
-// Retrieve supplier email from active session
 $supplier_email = $_SESSION['user_email'] ?? $_SESSION['email'] ?? 'Unknown Supplier';
 
-// Handle Status Updates
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['action'])) {
     $request_id = intval($_POST['request_id']);
     $status     = ($_POST['action'] === 'approve') ? 'Approved' : 'Rejected';
