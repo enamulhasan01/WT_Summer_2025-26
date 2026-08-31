@@ -6,8 +6,6 @@ session_start();
 require_once '../db.php';
 
 $supplier_email = $_SESSION['email'] ?? $_SESSION['user_email'] ?? $_SESSION['user'] ?? '';
-
-
 $total_approved = 0;
 if (!empty($supplier_email)) {
     $stmt_count = $conn->prepare("SELECT COUNT(*) AS total_approved FROM car_request WHERE Supplier_Email = ? AND Status = 'Approved'");
