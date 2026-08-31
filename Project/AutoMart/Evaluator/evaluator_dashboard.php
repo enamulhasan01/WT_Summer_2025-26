@@ -20,8 +20,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
     $stmt_update->bind_param("siiii", $status, $engine, $exterior, $interior, $trade_id);
     $stmt_update->execute();
     $stmt_update->close();
-
-    // If Approved, insert vehicle into `vehicle` table so it shows on "Explore your next car"
     if ($status === 'Approved') {
         $get_trade = $conn->query("SELECT * FROM trade_in WHERE Trade_Id = $trade_id")->fetch_assoc();
         if ($get_trade) {
@@ -36,10 +34,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
     exit();
 }
 
-// Fetch all trade-in requests
 $result = $conn->query("SELECT * FROM trade_in ORDER BY Trade_Id DESC");
 
-// Get selected vehicle for evaluation panel
 $selected_id = $_GET['selected'] ?? null;
 $selected_car = null;
 
