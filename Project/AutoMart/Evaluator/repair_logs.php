@@ -171,7 +171,6 @@ if ($selected_id) {
                 </div>
             </form>
 
-            <!-- Explanation Panel -->
             <div class="info-panel">
                 <h4>What happens on save</h4>
                 
