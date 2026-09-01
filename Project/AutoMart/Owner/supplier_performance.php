@@ -41,7 +41,15 @@ include '../db.php';
         
         .approval-box { text-align: center; margin-right: 50px;}
         .approval-box p { margin: 0 0 8px 0; font-size: 14px; font-weight: bold; color: #333;}
-        .approval-box .rate { font-size: 20px; font-weight: bold; color: #28a745; }
+        .approval-box .rate { font-size: 22px; font-weight: bold; }
+        
+        /* Dynamic colors for approval rates */
+        .rate-high { color: #28a745; } /* Green */
+        .rate-mid { color: #f39c12; }  /* Orange */
+        .rate-low { color: #dc3545; }  /* Red */
+        .rate-none { color: #555555; } /* Grey for 0 activity */
+        
+        .no-data { text-align: center; color: #a0aec0; margin-top: 50px; font-size: 18px; }
     </style>
 </head>
 <body>
@@ -58,29 +66,57 @@ include '../db.php';
     <div class="main-content">
         <h1>Supplier Performance</h1>
 
-        <!-- Supplier Card 1 -->
-        <div class="supplier-card">
-            <div class="supplier-info">
-                <h3>Premium Auto Wholesale</h3>
-                <p>Vehicles Supplied <span>15</span></p>
-            </div>
-            <div class="approval-box">
-                <p>Approval Rate</p>
-                <div class="rate">92%</div>
-            </div>
-        </div>
+        <?php
+        
+        $sql = "SELECT 
+                    u.email AS Supplier_Email, 
+                    COUNT(c.Request_Id) AS Total_Handled,
+                    SUM(CASE WHEN c.Status = 'Approved' THEN 1 ELSE 0 END) AS Total_Approved
+                FROM users u
+                LEFT JOIN car_request c ON u.email = c.Supplier_Email
+                WHERE u.role = 'Supplier'
+                GROUP BY u.email 
+                ORDER BY Total_Handled DESC, u.email ASC";
+                
+        $result = $conn->query($sql);
 
-        <!-- Supplier Card 2 -->
-        <div class="supplier-card">
-            <div class="supplier-info">
-                <h3>City Auto Distributors</h3>
-                <p>Vehicles Supplied <span>22</span></p>
-            </div>
-            <div class="approval-box">
-                <p>Approval Rate</p>
-                <div class="rate">88%</div>
-            </div>
-        </div>
+        if ($result && $result->num_rows > 0) {
+            while($row = $result->fetch_assoc()) {
+                $supplierEmail = htmlspecialchars($row['Supplier_Email']);
+                $totalHandled = $row['Total_Handled'] ? $row['Total_Handled'] : 0;
+                $totalApproved = $row['Total_Approved'] ? $row['Total_Approved'] : 0;
+                
+                
+                $approvalRate = ($totalHandled > 0) ? round(($totalApproved / $totalHandled) * 100) : 0;
+                
+                
+                if ($totalHandled == 0) {
+                    $rateClass = "rate-none"; // No activity yet
+                } elseif ($approvalRate >= 80) {
+                    $rateClass = "rate-high";
+                } elseif ($approvalRate >= 50) {
+                    $rateClass = "rate-mid";
+                } else {
+                    $rateClass = "rate-low";
+                }
+
+                echo '
+                <div class="supplier-card">
+                    <div class="supplier-info">
+                        <h3>' . $supplierEmail . '</h3>
+                        <p>Total Demands Handled: <span>' . $totalHandled . '</span></p>
+                        <p style="margin-top:10px; font-weight:normal; font-size:13px; color:#555;">(Approved: ' . $totalApproved . ')</p>
+                    </div>
+                    <div class="approval-box">
+                        <p>Approval Rate</p>
+                        <div class="rate ' . $rateClass . '">' . $approvalRate . '%</div>
+                    </div>
+                </div>';
+            }
+        } else {
+            echo '<div class="no-data">No suppliers found in the database.</div>';
+        }
+        ?>
 
     </div>
 </body>
