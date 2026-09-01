@@ -61,7 +61,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['action'])) {
 </head>
 <body>
     <div class="sidebar">
-        //
+        <h2>Dashboard Overview</h2>
+        <a href="owner_dashboard.php">DASHBOARD</a>
+        <a href="pending_list.php">PENDING LIST</a>
+        <a href="manage_inventory.php">MANAGE INVENTORY</a>
+        <a href="supplier_performance.php">SUPPLIER PERFORMANCE</a>
+        <a href="active_requests.php" class="active">ACTIVE CUSTOMER WISHLIST</a>
+        <a href="../logout.php" class="logout">Logout</a>
     </div>
 
     <div class="main-content">
