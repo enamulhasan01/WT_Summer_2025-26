@@ -41,7 +41,10 @@ $totalPending = $pendResult->fetch_assoc()['pending'];
 <body>
     <div class="sidebar">
         <h2>Dashboard Overview</h2>
-        //add
+        <a href="owner_dashboard.php" class="active">DASHBOARD</a>
+        <a href="pending_list.php">PENDING LIST</a>
+        <a href="manage_inventory.php">MANAGE INVENTORY</a>
+        <a href="supplier_performance.php">SUPPLIER PERFORMANCE</a>
         <a href="active_requests.php">ACTIVE CUSTOMER WISHLIST</a>
         <a href="../logout.php" class="logout">Logout</a>
     </div>
