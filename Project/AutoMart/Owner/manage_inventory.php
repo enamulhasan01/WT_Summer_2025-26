@@ -51,7 +51,8 @@ include '../db.php';
     <div class="main-content">
         <h1>Manage Inventory</h1>
         <div class="top-bar">
-            //
+            <input type="text" class="search-bar" placeholder="Search Cars...">
+            <button class="filter-btn">Filter</button>
         </div>
         <a href="add_vehicle.php" class="add-btn">+ Add New Vehicle</a>
 
