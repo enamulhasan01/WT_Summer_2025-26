@@ -31,7 +31,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
         }
     }
 
-    $msg = ($action === 'accept') ? 'accepted' : 'rejected';
+    $msg = ($action === 'accept') ? 'accept' : 'rejected';
     header("Location: evaluator_dashboard.php?selected=" . $trade_id . "&msg=" . $msg);
     exit();
 }
@@ -158,8 +158,9 @@ if ($selected_id) {
         </div>
 
         <?php if ($selected_car): ?>
-        <form method="POST" action="evaluator_dashboard.php">
+        <form method="POST" action="evaluator_dashboard.php" id="tradeForm">
             <input type="hidden" name="trade_id" value="<?php echo $selected_car['Trade_Id']; ?>">
+            <input type="hidden" name="action" id="actionInput" value="">
             
             <div class="inspection-card">
                 <div class="grading-section">
@@ -193,8 +194,8 @@ if ($selected_id) {
                     </div>
 
                     <div class="action-btns">
-                        <button type="submit" name="action" value="accept" class="btn-accept">Accept & List Vehicle</button>
-                        <button type="submit" name="action" value="reject" class="btn-reject">Reject Request</button>
+                        <button type="submit" onclick="document.getElementById('actionInput').value='accept';" class="btn-accept">Accept & List Vehicle</button>
+                        <button type="submit" onclick="document.getElementById('actionInput').value='reject';" class="btn-reject">Reject Request</button>
                     </div>
                 </div>
             </div>
