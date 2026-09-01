@@ -24,6 +24,7 @@ $result = $conn->query($sql);
 function getCarImage($model) {
     $modelLower = strtolower($model);
     
+
     if (strpos($modelLower, 'civic') !== false) {
         return '../Assets/honda_civic.png';
     } elseif (strpos($modelLower, 'rav4') !== false) {
