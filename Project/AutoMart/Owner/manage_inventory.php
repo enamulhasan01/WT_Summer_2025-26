@@ -39,14 +39,19 @@ include '../db.php';
 </head>
 <body>
     <div class="sidebar">
-        //
+        <h2>Dashboard Overview</h2>
+        <a href="owner_dashboard.php">DASHBOARD</a>
+        <a href="pending_list.php">PENDING LIST</a>
+        <a href="manage_inventory.php" class="active">MANAGE INVENTORY</a>
+        <a href="supplier_performance.php">SUPPLIER PERFORMANCE</a>
+        <a href="active_requests.php">ACTIVE CUSTOMER WISHLIST</a>
+        <a href="../logout.php" class="logout">Logout</a>
     </div>
 
     <div class="main-content">
         <h1>Manage Inventory</h1>
         <div class="top-bar">
-            <input type="text" class="search-bar" placeholder="Search Cars...">
-            <button class="filter-btn">Filter</button>
+            //
         </div>
         <a href="add_vehicle.php" class="add-btn">+ Add New Vehicle</a>
 
