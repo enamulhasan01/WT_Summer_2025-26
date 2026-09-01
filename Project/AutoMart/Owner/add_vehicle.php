@@ -43,7 +43,11 @@ if($_SERVER["REQUEST_METHOD"] == "POST") {
             display: inline-block;
             background-color: #e3d596; 
             color: black;
-            //
+            padding: 6px 20px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 14px;
+            margin-bottom: 8px;
         }
         .form-group input[type="text"], .form-group input[type="number"] {
             width: 100%;
