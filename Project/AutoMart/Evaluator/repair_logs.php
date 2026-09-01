@@ -2,33 +2,57 @@
 session_start();
 require_once '../db.php';
 
-try { $conn->query("ALTER TABLE vehicle ADD COLUMN QA_Status VARCHAR(50) DEFAULT 'Needs Repair'"); } catch (Exception $e) {}
-try { $conn->query("ALTER TABLE vehicle ADD COLUMN Repair_Notes TEXT DEFAULT ''"); } catch (Exception $e) {}
-try { $conn->query("ALTER TABLE vehicle ADD COLUMN Repair_Cost DECIMAL(10,2) DEFAULT 0.00"); } catch (Exception $e) {}
-
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'save_repair') {
-    $vehicle_id = intval($_POST['vehicle_id']);
-    $service_desc = trim($_POST['service_description']);
-    $parts_cost = floatval($_POST['parts_cost']);
-    $service_cost = floatval($_POST['service_cost']);
-    $total_cost = $parts_cost + $service_cost;
-
-    $stmt = $conn->prepare("UPDATE vehicle SET QA_Status = 'Ready for Inventory', Availability = 'Available', Repair_Notes = ?, Repair_Cost = ? WHERE Vehicle_Id = ?");
-    $stmt->bind_param("sdi", $service_desc, $total_cost, $vehicle_id);
-    $stmt->execute();
-    $stmt->close();
-
-    header("Location: repair_logs.php?success=1");
+if (!isset($_SESSION["email"]) || $_SESSION["role"] !== "Evaluator") {
+    header("Location: ../login.php");
     exit();
 }
 
-$result = $conn->query("SELECT * FROM vehicle WHERE QA_Status LIKE '%Repair%' OR QA_Status LIKE '%Poor%' OR QA_Status LIKE '%Needs%' OR QA_Status = 'Pending Repair' OR (Condition_Status = 'Poor' AND QA_Status = 'awaiting clearance') ORDER BY Vehicle_Id DESC");
+// Handle Form Submission: Update Repair Details, Counter Offer, and Approve/Reject
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
+    $trade_id = intval($_POST['trade_id']);
+    $action = $_POST['action'];
+    $repair_details = trim($_POST['repair_details']);
+    $counter_offer = !empty($_POST['counter_offer']) ? floatval($_POST['counter_offer']) : null;
+
+    $status = ($action === 'accept') ? 'Approved' : 'Rejected';
+
+    // If counter offer is provided, update the expected price to the new repaired trade value
+    if ($status === 'Approved' && $counter_offer !== null) {
+        $stmt_update = $conn->prepare("UPDATE trade_in SET Status = ?, Repair_Details = ?, Counter_Offer = ?, Expected_Price = ? WHERE Trade_Id = ?");
+        $stmt_update->bind_param("ssddi", $status, $repair_details, $counter_offer, $counter_offer, $trade_id);
+    } else {
+        $stmt_update = $conn->prepare("UPDATE trade_in SET Status = ?, Repair_Details = ?, Counter_Offer = ? WHERE Trade_Id = ?");
+        $stmt_update->bind_param("ssdi", $status, $repair_details, $counter_offer, $trade_id);
+    }
+    
+    $stmt_update->execute();
+    $stmt_update->close();
+
+    // If approved, sync to vehicle table
+    if ($status === 'Approved') {
+        $get_trade = $conn->query("SELECT * FROM trade_in WHERE Trade_Id = $trade_id")->fetch_assoc();
+        if ($get_trade) {
+            $stmt_ins = $conn->prepare("INSERT INTO vehicle (Make, Model, Year, Mileage, Condition_Status, Listed_Price, Availability, Image, Repair_Details, Counter_Offer) VALUES (?, ?, ?, ?, ?, ?, 'Available', 'default_car.png', ?, ?)");
+            $stmt_ins->bind_param("ssiisdsd", $get_trade['Car_Make'], $get_trade['Car_Model'], $get_trade['Year'], $get_trade['Mileage'], $get_trade['Condition_Status'], $get_trade['Expected_Price'], $repair_details, $counter_offer);
+            $stmt_ins->execute();
+            $stmt_ins->close();
+        }
+    }
+
+    $msg = ($action === 'accept') ? 'accept' : 'rejected';
+    header("Location: repair_logs.php?selected=" . $trade_id . "&msg=" . $msg);
+    exit();
+}
+
+// Fetch all poor conditioned vehicles or vehicles flagged for repair
+$query = "SELECT * FROM trade_in WHERE Condition_Status = 'Poor' OR Status LIKE '%Repair%' ORDER BY Trade_Id DESC";
+$result = $conn->query($query);
 
 $selected_id = $_GET['selected'] ?? null;
 $selected_car = null;
 
 if ($selected_id) {
-    $stmt_sel = $conn->prepare("SELECT * FROM vehicle WHERE Vehicle_Id = ?");
+    $stmt_sel = $conn->prepare("SELECT * FROM trade_in WHERE Trade_Id = ?");
     $stmt_sel->bind_param("i", $selected_id);
     $stmt_sel->execute();
     $selected_car = $stmt_sel->get_result()->fetch_assoc();
@@ -46,64 +70,52 @@ if ($selected_id) {
     <title>Repair Logs - AutoMart Evaluator</title>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
-        body { display: flex; background: linear-gradient(135deg, #070D14 0%, #0B1622 100%); color: #FFFFFF; min-height: 100vh; }
+        body { display: flex; background-color: #0B1622; color: #FFFFFF; min-height: 100vh; }
 
-      
-        .sidebar { width: 260px; background-color: #0F1216; padding: 24px 16px; display: flex; flex-direction: column; flex-shrink: 0; border-right: 1px solid #1F2937; }
+        .sidebar { width: 260px; background-color: #0F1216; padding: 24px 16px; display: flex; flex-direction: column; flex-shrink: 0; }
         .sidebar h2 { font-size: 24px; font-weight: bold; margin-bottom: 32px; padding-left: 8px; color: #FFFFFF; }
         .nav-link { display: block; padding: 12px 16px; margin-bottom: 8px; border-radius: 8px; color: #8B949E; text-decoration: none; font-size: 15px; font-weight: 500; }
         .nav-link.active { background-color: #0066FF; color: #FFFFFF; }
         .nav-link:hover:not(.active) { background-color: #161B22; color: #FFFFFF; }
         .btn-logout { margin-top: auto; background-color: #DC2626; color: white; padding: 12px; border-radius: 8px; border: none; text-align: center; text-decoration: none; font-weight: bold; display: block; }
 
-       
-        .main-content { flex: 1; padding: 32px; overflow-y: auto; display: flex; flex-direction: column; gap: 24px; }
-        .page-header { background-color: #161B22; padding: 12px 24px; border-radius: 12px; width: fit-content; font-size: 16px; font-weight: 700; color: #FFFFFF; border: 1px solid #21262D; letter-spacing: 1px; }
+        .main-content { flex: 1; padding: 40px; overflow-y: auto; display: flex; flex-direction: column; gap: 24px; }
+        .page-header { background-color: #161B22; padding: 12px 24px; border-radius: 12px; width: fit-content; font-size: 16px; font-weight: 700; color: #FFFFFF; border: 1px solid #21262D; }
 
-        
-        .repair-cards-row { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; }
-        .repair-card { background-color: #111822; border: 1px solid #1F2937; border-radius: 12px; padding: 20px; cursor: pointer; transition: all 0.2s ease; position: relative; }
-        .repair-card:hover { border-color: #3B82F6; transform: translateY(-2px); }
-        .repair-card.active-repair { border-color: #3B82F6; background-color: #151F30; }
-        
-        .badge-needs-repair { background-color: rgba(239, 68, 68, 0.15); color: #F87171; font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 6px; display: inline-block; margin-bottom: 12px; text-transform: uppercase; }
-        .car-title-sm { font-size: 16px; font-weight: 700; color: #FFFFFF; margin-bottom: 6px; }
-        .car-desc-sm { font-size: 13px; color: #9CA3AF; line-height: 1.4; }
+        .table-card { background-color: #161B22; border: 1px solid #21262D; border-radius: 16px; overflow: hidden; }
+        table { width: 100%; border-collapse: collapse; text-align: left; }
+        th { background-color: #0F1216; padding: 16px 20px; font-size: 14px; color: #8B949E; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+        td { padding: 16px 20px; border-top: 1px solid #21262D; font-size: 15px; color: #E6EDF3; }
+        tr.active-row { background-color: #1C2128; }
+        tr:hover { background-color: #1F242C; cursor: pointer; }
 
-        .log-workspace { display: grid; grid-template-columns: 2fr 1fr; gap: 24px; }
-        .form-card { background-color: #111822; border: 1px solid #1F2937; border-radius: 16px; padding: 28px; display: flex; flex-direction: column; gap: 20px; }
-        .form-title { font-size: 18px; font-weight: 700; color: #FFFFFF; border-bottom: 1px solid #1F2937; padding-bottom: 12px; }
-        
-        .input-group { display: flex; flex-direction: column; gap: 8px; }
-        .input-group label { font-size: 13px; font-weight: 600; color: #9CA3AF; text-transform: uppercase; letter-spacing: 0.5px; }
-        .input-group textarea, .input-group input { background-color: #0B121B; border: 1px solid #2A3441; border-radius: 8px; padding: 12px 16px; color: #FFFFFF; font-size: 14px; outline: none; }
-        .input-group textarea:focus, .input-group input:focus { border-color: #3B82F6; }
-        
-        .cost-inputs-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-        .total-cost-box { background-color: #0B121B; border: 1px solid #2A3441; border-radius: 8px; padding: 16px; display: flex; justify-content: space-between; align-items: center; font-weight: 700; font-size: 16px; color: #FACC15; }
-        
-        .form-actions { display: flex; gap: 16px; margin-top: 8px; }
-        .btn-cancel { background-color: #1F2937; color: #FFFFFF; border: none; padding: 12px 24px; border-radius: 8px; font-weight: 600; cursor: pointer; text-decoration: none; text-align: center; flex: 1; }
-        .btn-cancel:hover { background-color: #374151; }
-        .btn-save { background-color: #F59E0B; color: #000000; border: none; padding: 12px 24px; border-radius: 8px; font-weight: 700; cursor: pointer; flex: 1; }
-        .btn-save:hover { background-color: #D97706; }
+        .status-badge { display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 13px; font-weight: 700; }
+        .status-approved { background-color: rgba(34, 197, 94, 0.15); color: #4ADE80; }
+        .status-rejected { background-color: rgba(239, 68, 68, 0.15); color: #F87171; }
+        .status-pending { background-color: rgba(234, 179, 8, 0.15); color: #FACC15; }
 
-    
-        .info-panel { background-color: #111822; border: 1px solid #1F2937; border-radius: 16px; padding: 24px; display: flex; flex-direction: column; gap: 16px; height: fit-content; }
-        .info-panel h4 { font-size: 15px; font-weight: 700; color: #FFFFFF; margin-bottom: 4px; }
-        .info-step { display: flex; gap: 12px; align-items: flex-start; }
-        .step-dot { width: 8px; height: 8px; background-color: #F59E0B; border-radius: 50%; margin-top: 6px; flex-shrink: 0; }
-        .step-content div:first-child { font-size: 13px; font-weight: 700; color: #FFFFFF; }
-        .step-content div:last-child { font-size: 12px; color: #9CA3AF; margin-top: 2px; }
+        .inspection-card { background-color: #FFFFFF; color: #0F172A; border-radius: 20px; padding: 32px; display: flex; gap: 40px; }
+        
+        .repair-form-section { flex: 1.2; display: flex; flex-direction: column; gap: 20px; border-right: 1px solid #E2E8F0; padding-right: 32px; }
+        .repair-form-section h3 { font-size: 18px; font-weight: 800; color: #0F172A; }
+        
+        .form-group { display: flex; flex-direction: column; gap: 8px; }
+        .form-group label { font-size: 14px; font-weight: 700; color: #334155; }
+        .form-input, .form-textarea { padding: 10px 14px; background: #F8FAFC; border: 1px solid #CBD5E1; color: #0F172A; border-radius: 8px; font-size: 15px; font-weight: 600; }
+        .form-textarea { resize: vertical; min-height: 90px; }
+
+        .details-section { flex: 1; display: flex; flex-direction: column; justify-content: space-between; }
+        .car-heading { font-size: 24px; font-weight: 800; color: #0F172A; margin-bottom: 4px; }
+        .car-sub { font-size: 14px; color: #64748B; margin-bottom: 16px; }
+        .spec-row { font-size: 15px; color: #334155; margin-bottom: 8px; }
+        .spec-row strong { color: #0F172A; display: inline-block; width: 150px; }
+
+        .action-btns { display: flex; gap: 12px; margin-top: 24px; }
+        .btn-accept { flex: 1; background-color: #16A34A; border: none; color: white; padding: 14px; border-radius: 10px; font-weight: 700; cursor: pointer; font-size: 15px; }
+        .btn-accept:hover { background-color: #15803D; }
+        .btn-reject { flex: 1; background-color: #DC2626; border: none; color: white; padding: 14px; border-radius: 10px; font-weight: 700; cursor: pointer; font-size: 15px; }
+        .btn-reject:hover { background-color: #B91C1C; }
     </style>
-    <script>
-        function calculateTotal() {
-            let parts = parseFloat(document.getElementById('parts_cost').value) || 0;
-            let service = parseFloat(document.getElementById('service_cost').value) || 0;
-            let total = parts + service;
-            document.getElementById('total_display').innerText = '$' + total.toFixed(2);
-        }
-    </script>
 </head>
 <body>
 
@@ -117,91 +129,101 @@ if ($selected_id) {
     </div>
 
     <div class="main-content">
-        <div class="page-header">REPAIR LOG</div>
+        <div class="page-header">Repair Logs & Re-Evaluation</div>
 
-       
-        <div class="repair-cards-row">
-            <?php if ($result && $result->num_rows > 0): ?>
-                <?php while ($row = $result->fetch_assoc()): ?>
-                    <?php $isActive = ($selected_car && $selected_car['Vehicle_Id'] == $row['Vehicle_Id']); ?>
-                    <div class="repair-card <?php echo $isActive ? 'active-repair' : ''; ?>" onclick="window.location.href='repair_logs.php?selected=<?php echo $row['Vehicle_Id']; ?>'">
-                        <span class="badge-needs-repair">Needs Repair</span>
-                        <div class="car-title-sm"><?php echo htmlspecialchars($row['Year'] . ' ' . $row['Make'] . ' ' . $row['Model']); ?></div>
-                        <div class="car-desc-sm"><?php echo htmlspecialchars($row['Repair_Notes'] ?: 'Pending diagnostic inspection and mechanical repair log entry.'); ?></div>
-                    </div>
-                <?php endwhile; ?>
-            <?php else: ?>
-                <div style="color: #9CA3AF; font-size: 14px; padding: 12px;">No vehicles currently flagged for repair. All inventory is clear.</div>
-            <?php endif; ?>
+        <div class="table-card">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Request ID</th>
+                        <th>Customer</th>
+                        <th>Model</th>
+                        <th>Condition</th>
+                        <th>Customer Price</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php if ($result && $result->num_rows > 0): ?>
+                        <?php while ($row = $result->fetch_assoc()): ?>
+                            <?php $isSelected = ($selected_car && $selected_car['Trade_Id'] == $row['Trade_Id']); ?>
+                            <tr class="<?php echo $isSelected ? 'active-row' : ''; ?>" onclick="window.location.href='repair_logs.php?selected=<?php echo $row['Trade_Id']; ?>'">
+                                <td>T-<?php echo str_pad($row['Trade_Id'], 3, '0', STR_PAD_LEFT); ?></td>
+                                <td><?php echo htmlspecialchars($row['Customer_Email']); ?></td>
+                                <td><?php echo htmlspecialchars($row['Year'] . ' ' . $row['Car_Make'] . ' ' . $row['Car_Model']); ?></td>
+                                <td><span style="color: #F87171; font-weight: bold;"><?php echo htmlspecialchars($row['Condition_Status']); ?></span></td>
+                                <td>$<?php echo number_format($row['Expected_Price']); ?></td>
+                                <td>
+                                    <?php 
+                                        $badgeClass = 'status-pending';
+                                        if ($row['Status'] == 'Approved') $badgeClass = 'status-approved';
+                                        if ($row['Status'] == 'Rejected') $badgeClass = 'status-rejected';
+                                    ?>
+                                    <span class="status-badge <?php echo $badgeClass; ?>">
+                                        <?php echo htmlspecialchars($row['Status']); ?>
+                                    </span>
+                                </td>
+                            </tr>
+                        <?php endwhile; ?>
+                    <?php else: ?>
+                        <tr><td colspan="5" style="text-align: center; color: #8B949E; padding: 24px;">No poor-conditioned vehicles in repair log queue.</td></tr>
+                    <?php endif; ?>
+                </tbody>
+            </table>
         </div>
 
         <?php if ($selected_car): ?>
-        
-        <div class="log-workspace">
-            <form method="POST" action="repair_logs.php" class="form-card">
-                <input type="hidden" name="action" value="save_repair">
-                <input type="hidden" name="vehicle_id" value="<?php echo $selected_car['Vehicle_Id']; ?>">
-
-                <div class="form-title">LOG REPAIR - <?php echo htmlspecialchars(strtoupper($selected_car['Make'] . ' ' . $selected_car['Model'])); ?></div>
-
-                <div class="input-group">
-                    <label>Service Description:</label>
-                    <textarea name="service_description" rows="3" required placeholder="Enter service description, parts replaced, and notes..."><?php echo htmlspecialchars($selected_car['Repair_Notes'] ?? ''); ?></textarea>
-                </div>
-
-                <div class="cost-inputs-row">
-                    <div class="input-group">
-                        <label>Parts Cost ($):</label>
-                        <input type="number" step="0.01" id="parts_cost" name="parts_cost" value="0.00" oninput="calculateTotal()" required>
+        <form method="POST" action="repair_logs.php" id="repairForm">
+            <input type="hidden" name="trade_id" value="<?php echo $selected_car['Trade_Id']; ?>">
+            <input type="hidden" name="action" id="actionInput" value="">
+            
+            <div class="inspection-card">
+                <div class="repair-form-section">
+                    <h3>Repair & Valuation Assessment</h3>
+                    
+                    <div class="form-group">
+                        <label for="repair_details">Required Repairs / Maintenance</label>
+                        <textarea name="repair_details" id="repair_details" class="form-textarea" placeholder="Describe mechanical/body repairs needed (e.g. Bumper replacement, Engine tuning)..."><?php echo htmlspecialchars($selected_car['Repair_Details'] ?? ''); ?></textarea>
                     </div>
-                    <div class="input-group">
-                        <label>Service Cost ($):</label>
-                        <input type="number" step="0.01" id="service_cost" name="service_cost" value="0.00" oninput="calculateTotal()" required>
+
+                    <div class="form-group">
+                        <label for="counter_offer">Adjusted Offer Price ($)</label>
+                        <input type="number" step="0.01" name="counter_offer" id="counter_offer" class="form-input" placeholder="e.g. 800" value="<?php echo htmlspecialchars($selected_car['Counter_Offer'] ?? $selected_car['Expected_Price']); ?>">
                     </div>
                 </div>
 
-                <div class="input-group">
-                    <label>Total Repair Cost</label>
-                    <div class="total-cost-box" id="total_display">$0.00</div>
-                </div>
+                <div class="details-section">
+                    <div>
+                        <h2 class="car-heading"><?php echo htmlspecialchars($selected_car['Year'] . ' ' . $selected_car['Car_Make'] . ' ' . $selected_car['Car_Model']); ?></h2>
+                        <div class="car-sub">Submitted Request T-<?php echo str_pad($selected_car['Trade_Id'], 3, '0', STR_PAD_LEFT); ?></div>
 
-                <div class="form-actions">
-                    <a href="repair_logs.php" class="btn-cancel">Cancel</a>
-                    <button type="submit" class="btn-save">SAVE REPAIR LOG</button>
-                </div>
-            </form>
-
-            <div class="info-panel">
-                <h4>What happens on save</h4>
-                
-                <div class="info-step">
-                    <div class="step-dot"></div>
-                    <div class="step-content">
-                        <div>Ticket marked resolved</div>
-                        <div>Vehicle status moves from "Needs Repair" to "Ready for Inventory" and updates Customer Portal request status.</div>
+                        <div class="spec-row"><strong>Customer:</strong> <?php echo htmlspecialchars($selected_car['Customer_Email']); ?></div>
+                        <div class="spec-row"><strong>Mileage:</strong> <?php echo number_format($selected_car['Mileage']); ?> km</div>
+                        <div class="spec-row"><strong>Condition:</strong> <span style="color: #DC2626; font-weight: bold;"><?php echo htmlspecialchars($selected_car['Condition_Status']); ?></span></div>
+                        <div class="spec-row"><strong>Asked Value:</strong> <span style="color: #64748B;">$<?php echo number_format($selected_car['Expected_Price']); ?></span></div>
+                        <?php if (!empty($selected_car['Counter_Offer'])): ?>
+                            <div class="spec-row"><strong>Post-Repair Offer:</strong> <span style="color: #16A34A; font-weight: 800;">$<?php echo number_format($selected_car['Counter_Offer']); ?></span></div>
+                        <?php endif; ?>
                     </div>
-                </div>
 
-                <div class="info-step">
-                    <div class="step-dot"></div>
-                    <div class="step-content">
-                        <div>Cost basis recorded</div>
-                        <div>Parts and labor costs are added securely against this VIN in the database.</div>
-                    </div>
-                </div>
-
-                <div class="info-step">
-                    <div class="step-dot"></div>
-                    <div class="step-content">
-                        <div>Profit Analytics refreshed</div>
-                        <div>Shop Owner dashboard reflects updated vehicle margin instantly.</div>
+                    <div class="action-btns">
+                        <button type="submit" onclick="document.getElementById('actionInput').value='accept';" class="btn-accept">Approve & Update Price</button>
+                        <button type="submit" onclick="document.getElementById('actionInput').value='reject';" class="btn-reject">Reject Vehicle</button>
                     </div>
                 </div>
             </div>
-        </div>
+        </form>
         <?php endif; ?>
-
     </div>
 
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const msg = urlParams.get('msg');
+        if (msg === 'accept') {
+            alert('Repair log updated: Vehicle approved and price revised successfully!');
+        } else if (msg === 'rejected') {
+            alert('Trade-in request rejected.');
+        }
+    </script>
 </body>
 </html>
