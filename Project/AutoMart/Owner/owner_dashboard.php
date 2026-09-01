@@ -53,7 +53,7 @@ $totalPending = $pendResult->fetch_assoc()['pending'];
         <h1>Dashboard Overview</h1>
         <div class="metrics-container">
             <div class="metric-card">
-                <h3>Total Inventory</h3>
+                //
                 <div class="number"><?php echo $totalInventory; ?></div>
             </div>
             <div class="metric-card pending">
