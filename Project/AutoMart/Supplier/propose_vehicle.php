@@ -51,6 +51,7 @@ function getCarImage($imageName, $model) {
 <!DOCTYPE html>
 <html lang="en">
 <head>
+
     <meta charset="UTF-8">
     <title>Proposed Vehicles - AutoMart</title>
     <style>
