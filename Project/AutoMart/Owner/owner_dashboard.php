@@ -6,11 +6,10 @@ if(!isset($_SESSION["email"]) || $_SESSION["role"] !== "Owner") {
 }
 include '../db.php';
 
-// Fetch Total Inventory
 $invResult = $conn->query("SELECT COUNT(*) as total FROM VEHICLE WHERE Availability = 'Available' OR Availability = 'In Stock'");
 $totalInventory = $invResult->fetch_assoc()['total'];
 
-// Fetch Pending Approvals (from Trade-ins or Supplier Cars)
+
 $pendResult = $conn->query("SELECT COUNT(*) as pending FROM TRADE_IN WHERE Status = 'Pending'");
 $totalPending = $pendResult->fetch_assoc()['pending'];
 ?>
@@ -42,10 +41,7 @@ $totalPending = $pendResult->fetch_assoc()['pending'];
 <body>
     <div class="sidebar">
         <h2>Dashboard Overview</h2>
-        <a href="owner_dashboard.php" class="active">DASHBOARD</a>
-        <a href="pending_list.php">PENDING LIST</a>
-        <a href="manage_inventory.php">MANAGE INVENTORY</a>
-        <a href="supplier_performance.php">SUPPLIER PERFORMANCE</a>
+        //add
         <a href="active_requests.php">ACTIVE CUSTOMER WISHLIST</a>
         <a href="../logout.php" class="logout">Logout</a>
     </div>
