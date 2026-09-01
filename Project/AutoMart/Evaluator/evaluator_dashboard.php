@@ -20,6 +20,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
     $stmt_update->bind_param("siiii", $status, $engine, $exterior, $interior, $trade_id);
     $stmt_update->execute();
     $stmt_update->close();
+    
     if ($status === 'Approved') {
         $get_trade = $conn->query("SELECT * FROM trade_in WHERE Trade_Id = $trade_id")->fetch_assoc();
         if ($get_trade) {
@@ -30,7 +31,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
         }
     }
 
-    header("Location: evaluator_dashboard.php?selected=" . $trade_id);
+    $msg = ($action === 'accept') ? 'accepted' : 'rejected';
+    header("Location: evaluator_dashboard.php?selected=" . $trade_id . "&msg=" . $msg);
     exit();
 }
 
@@ -60,7 +62,6 @@ if ($selected_id) {
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
         body { display: flex; background-color: #0B1622; color: #FFFFFF; min-height: 100vh; }
 
-       
         .sidebar { width: 260px; background-color: #0F1216; padding: 24px 16px; display: flex; flex-direction: column; flex-shrink: 0; }
         .sidebar h2 { font-size: 24px; font-weight: bold; margin-bottom: 32px; padding-left: 8px; color: #FFFFFF; }
         .nav-link { display: block; padding: 12px 16px; margin-bottom: 8px; border-radius: 8px; color: #8B949E; text-decoration: none; font-size: 15px; font-weight: 500; }
@@ -68,11 +69,9 @@ if ($selected_id) {
         .nav-link:hover:not(.active) { background-color: #161B22; color: #FFFFFF; }
         .btn-logout { margin-top: auto; background-color: #DC2626; color: white; padding: 12px; border-radius: 8px; border: none; text-align: center; text-decoration: none; font-weight: bold; display: block; }
 
-       
         .main-content { flex: 1; padding: 40px; overflow-y: auto; display: flex; flex-direction: column; gap: 24px; }
         .page-header { background-color: #161B22; padding: 12px 24px; border-radius: 12px; width: fit-content; font-size: 16px; font-weight: 700; color: #FFFFFF; border: 1px solid #21262D; }
 
-       
         .table-card { background-color: #161B22; border: 1px solid #21262D; border-radius: 16px; overflow: hidden; }
         table { width: 100%; border-collapse: collapse; text-align: left; }
         th { background-color: #0F1216; padding: 16px 20px; font-size: 14px; color: #8B949E; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
@@ -80,7 +79,6 @@ if ($selected_id) {
         tr.active-row { background-color: #1C2128; }
         tr:hover { background-color: #1F242C; cursor: pointer; }
 
-       
         .status-badge { display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 13px; font-weight: 700; }
         .status-approved { background-color: rgba(34, 197, 94, 0.15); color: #4ADE80; }
         .status-rejected { background-color: rgba(239, 68, 68, 0.15); color: #F87171; }
@@ -110,9 +108,9 @@ if ($selected_id) {
 
     <div class="sidebar">
         <h2>AutoMart</h2>
-        <a href="evaluator_dashboard.php" class="nav-link">Trade-In Queue</a>
-<a href="supplier_qa_hub.php" class="nav-link">Supplier QA Hub</a>
-<a href="repair_logs.php" class="nav-link">Repair Logs</a>
+        <a href="evaluator_dashboard.php" class="nav-link active">Trade-In Queue</a>
+        <a href="supplier_qa_hub.php" class="nav-link">Supplier QA Hub</a>
+        <a href="repair_logs.php" class="nav-link">Repair Logs</a>
         
         <a href="../logout.php" class="btn-logout">Logout</a>
     </div>
@@ -120,7 +118,6 @@ if ($selected_id) {
     <div class="main-content">
         <div class="page-header">Trade in Evaluation</div>
 
-        
         <div class="table-card">
             <table>
                 <thead>
@@ -159,7 +156,6 @@ if ($selected_id) {
                 </tbody>
             </table>
         </div>
-
 
         <?php if ($selected_car): ?>
         <form method="POST" action="evaluator_dashboard.php">
@@ -206,5 +202,14 @@ if ($selected_id) {
         <?php endif; ?>
     </div>
 
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const msg = urlParams.get('msg');
+        if (msg === 'accept') {
+            alert('Trade-in request has been accepted and vehicle listed!');
+        } else if (msg === 'rejected') {
+            alert('Trade-in request has been rejected.');
+        }
+    </script>
 </body>
 </html>
