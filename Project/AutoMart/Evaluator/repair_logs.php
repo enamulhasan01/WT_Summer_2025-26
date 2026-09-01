@@ -7,7 +7,7 @@ if (!isset($_SESSION["email"]) || $_SESSION["role"] !== "Evaluator") {
     exit();
 }
 
-// Handle Form Submission: Update Repair Details, Counter Offer, and Approve/Reject
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
     $trade_id = intval($_POST['trade_id']);
     $action = $_POST['action'];
@@ -16,7 +16,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
 
     $status = ($action === 'accept') ? 'Approved' : 'Rejected';
 
-    // If counter offer is provided, update the expected price to the new repaired trade value
+  
     if ($status === 'Approved' && $counter_offer !== null) {
         $stmt_update = $conn->prepare("UPDATE trade_in SET Status = ?, Repair_Details = ?, Counter_Offer = ?, Expected_Price = ? WHERE Trade_Id = ?");
         $stmt_update->bind_param("ssddi", $status, $repair_details, $counter_offer, $counter_offer, $trade_id);
@@ -28,7 +28,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
     $stmt_update->execute();
     $stmt_update->close();
 
-    // If approved, sync to vehicle table
+    
     if ($status === 'Approved') {
         $get_trade = $conn->query("SELECT * FROM trade_in WHERE Trade_Id = $trade_id")->fetch_assoc();
         if ($get_trade) {
@@ -44,7 +44,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
     exit();
 }
 
-// Fetch all poor conditioned vehicles or vehicles flagged for repair
+
 $query = "SELECT * FROM trade_in WHERE Condition_Status = 'Poor' OR Status LIKE '%Repair%' ORDER BY Trade_Id DESC";
 $result = $conn->query($query);
 
