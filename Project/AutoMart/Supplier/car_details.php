@@ -87,7 +87,6 @@ function getCarImage($imageName, $model) {
     </style>
 </head>
 <body>
-
   
     <div class="sidebar">
         <h2>AutoMart</h2>
