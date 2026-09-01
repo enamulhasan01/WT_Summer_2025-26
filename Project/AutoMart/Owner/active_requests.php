@@ -61,20 +61,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['action'])) {
 </head>
 <body>
     <div class="sidebar">
-        <h2>Dashboard Overview</h2>
-        <a href="owner_dashboard.php">DASHBOARD</a>
-        <a href="pending_list.php">PENDING LIST</a>
-        <a href="manage_inventory.php">MANAGE INVENTORY</a>
-        <a href="supplier_performance.php">SUPPLIER PERFORMANCE</a>
-        <a href="active_requests.php" class="active">ACTIVE CUSTOMER WISHLIST</a>
-        <a href="../logout.php" class="logout">Logout</a>
+        //
     </div>
 
     <div class="main-content">
         <h1>Active Customer Requests</h1>
 
         <?php
-        // Updated Query: Covers 'Pending', NULL, and empty status to ensure it shows up
+       
         $sql = "SELECT * FROM CAR_REQUEST WHERE Status = 'Pending' OR Status IS NULL OR Status = '' ORDER BY Request_Id DESC";
         $result = $conn->query($sql);
 
