@@ -39,13 +39,7 @@ include '../db.php';
 </head>
 <body>
     <div class="sidebar">
-        <h2>Dashboard Overview</h2>
-        <a href="owner_dashboard.php">DASHBOARD</a>
-        <a href="pending_list.php">PENDING LIST</a>
-        <a href="manage_inventory.php" class="active">MANAGE INVENTORY</a>
-        <a href="supplier_performance.php">SUPPLIER PERFORMANCE</a>
-        <a href="active_requests.php">ACTIVE CUSTOMER WISHLIST</a>
-        <a href="../logout.php" class="logout">Logout</a>
+        //
     </div>
 
     <div class="main-content">
