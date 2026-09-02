@@ -11,20 +11,20 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['action'])) {
     $trade_id = $_POST['trade_id'];
     
     if ($_POST['action'] == 'approve') {
-        // Update trade status
+        
         $updateStmt = $conn->prepare("UPDATE TRADE_IN SET Status = 'Approved' WHERE Trade_Id = ?");
         $updateStmt->bind_param("i", $trade_id);
         $updateStmt->execute();
         $updateStmt->close();
         
-        // Add the approved trade-in car to the VEHICLE inventory automatically
+        
         $fetchTrade = $conn->query("SELECT * FROM TRADE_IN WHERE Trade_Id = $trade_id");
         if ($tradeData = $fetchTrade->fetch_assoc()) {
             $make = $tradeData['Car_Make'];
             $model = $tradeData['Car_Model'];
             $year = $tradeData['Year'];
             $price = $tradeData['Expected_Price']; 
-            $color = 'Standard'; // Default color since trade-in might not have color
+            $color = 'Standard'; 
             $availability = 'Available';
 
             $insertVeh = $conn->prepare("INSERT INTO VEHICLE (Make, Model, Year, Listed_Price, Color, Availability) VALUES (?, ?, ?, ?, ?, ?)");
@@ -100,7 +100,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['action'])) {
         </div>
 
         <?php
-        // Fetch only pending trade-in cars
+        
         $sql = "SELECT * FROM TRADE_IN WHERE Status = 'Pending' ORDER BY Request_Date DESC";
         $result = $conn->query($sql);
 
