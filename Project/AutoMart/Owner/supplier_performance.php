@@ -91,7 +91,7 @@ include '../db.php';
                 
                 
                 if ($totalHandled == 0) {
-                    $rateClass = "rate-none"; // No activity yet
+                    $rateClass = "rate-none"; 
                 } elseif ($approvalRate >= 80) {
                     $rateClass = "rate-high";
                 } elseif ($approvalRate >= 50) {
