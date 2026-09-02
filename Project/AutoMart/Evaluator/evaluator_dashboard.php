@@ -16,21 +16,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
     
     $status = ($action === 'accept') ? 'Approved' : 'Rejected';
 
+    
     $stmt_update = $conn->prepare("UPDATE trade_in SET Status = ?, Engine_Health = ?, Exterior_Condition = ?, Interior_Quality = ? WHERE Trade_Id = ?");
     $stmt_update->bind_param("siiii", $status, $engine, $exterior, $interior, $trade_id);
     $stmt_update->execute();
     $stmt_update->close();
     
-    if ($status === 'Approved') {
-        $get_trade = $conn->query("SELECT * FROM trade_in WHERE Trade_Id = $trade_id")->fetch_assoc();
-        if ($get_trade) {
-            $stmt_ins = $conn->prepare("INSERT INTO vehicle (Make, Model, Year, Mileage, Condition_Status, Listed_Price, Availability, Image) VALUES (?, ?, ?, ?, ?, ?, 'Available', 'default_car.png')");
-            $stmt_ins->bind_param("ssiisd", $get_trade['Car_Make'], $get_trade['Car_Model'], $get_trade['Year'], $get_trade['Mileage'], $get_trade['Condition_Status'], $get_trade['Expected_Price']);
-            $stmt_ins->execute();
-            $stmt_ins->close();
-        }
-    }
+    
 
+    
     $msg = ($action === 'accept') ? 'accept' : 'rejected';
     header("Location: evaluator_dashboard.php?selected=" . $trade_id . "&msg=" . $msg);
     exit();
@@ -203,14 +197,20 @@ if ($selected_id) {
         <?php endif; ?>
     </div>
 
+    <?php if (isset($_GET['msg'])): ?>
     <script>
-        const urlParams = new URLSearchParams(window.location.search);
-        const msg = urlParams.get('msg');
-        if (msg === 'accept') {
+        <?php if ($_GET['msg'] === 'accept'): ?>
             alert('Trade-in request has been accepted and vehicle listed!');
-        } else if (msg === 'rejected') {
+        <?php elseif ($_GET['msg'] === 'rejected'): ?>
             alert('Trade-in request has been rejected.');
-        }
+        <?php endif; ?>
+        
+        
+        const cleanUrl = new URL(window.location.href);
+        cleanUrl.searchParams.delete('msg');
+        window.history.replaceState(null, '', cleanUrl);
     </script>
+    <?php endif; ?>
+
 </body>
 </html>

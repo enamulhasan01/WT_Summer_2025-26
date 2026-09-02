@@ -209,10 +209,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             </div>
 
             <label>Full Name</label>
-            <input type="text" name="full_name" placeholder="John Doe" required>
+            <input type="text" name="full_name" placeholder="hasan ahmad" required>
 
             <label>Email address</label>
-            <input type="email" name="email" placeholder="john@example.com" required>
+            <input type="email" name="email" placeholder="hasan@example.com" required>
 
             <label>Password</label>
             <input type="password" name="password" placeholder="Create a strong password" required>
@@ -220,11 +220,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <label>Security Question: Who is your favorite faculty?</label>
             <input type="text" name="security_question" placeholder="e.g. Jose Mourinho" required>
 
+
             <label>Account Approval Code</label>
             <input type="text" name="approval_code" placeholder="Enter registration code (e.g., AUTOMART2026)" required>
 
+
             <input type="submit" value="Create Account">
         </form>
+        
         
         <p class="login-link">Already have an account? <a href="login.php">Log in here</a></p>
     </div>

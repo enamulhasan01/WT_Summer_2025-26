@@ -7,7 +7,6 @@ if (!isset($_SESSION["email"]) || $_SESSION["role"] !== "Evaluator") {
     exit();
 }
 
-
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
     $trade_id = intval($_POST['trade_id']);
     $action = $_POST['action'];
@@ -16,7 +15,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
 
     $status = ($action === 'accept') ? 'Approved' : 'Rejected';
 
-  
+    
     if ($status === 'Approved' && $counter_offer !== null) {
         $stmt_update = $conn->prepare("UPDATE trade_in SET Status = ?, Repair_Details = ?, Counter_Offer = ?, Expected_Price = ? WHERE Trade_Id = ?");
         $stmt_update->bind_param("ssddi", $status, $repair_details, $counter_offer, $counter_offer, $trade_id);
@@ -29,16 +28,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
     $stmt_update->close();
 
     
-    if ($status === 'Approved') {
-        $get_trade = $conn->query("SELECT * FROM trade_in WHERE Trade_Id = $trade_id")->fetch_assoc();
-        if ($get_trade) {
-            $stmt_ins = $conn->prepare("INSERT INTO vehicle (Make, Model, Year, Mileage, Condition_Status, Listed_Price, Availability, Image, Repair_Details, Counter_Offer) VALUES (?, ?, ?, ?, ?, ?, 'Available', 'default_car.png', ?, ?)");
-            $stmt_ins->bind_param("ssiisdsd", $get_trade['Car_Make'], $get_trade['Car_Model'], $get_trade['Year'], $get_trade['Mileage'], $get_trade['Condition_Status'], $get_trade['Expected_Price'], $repair_details, $counter_offer);
-            $stmt_ins->execute();
-            $stmt_ins->close();
-        }
-    }
 
+    
     $msg = ($action === 'accept') ? 'accept' : 'rejected';
     header("Location: repair_logs.php?selected=" . $trade_id . "&msg=" . $msg);
     exit();
